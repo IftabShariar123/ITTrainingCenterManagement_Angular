@@ -1,0 +1,409 @@
+<!--<div class="dashboard">
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-tachometer-alt card-icon"></i>
+      <h3 class="card-title">Admission</h3>
+    </div>
+    <button class="card-button" (click)="goTo('admission')">View Admission</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-tachometer-alt card-icon"></i>
+      <h3 class="card-title">Registration</h3>
+    </div>
+    <button class="card-button" (click)="goTo('registration')">View Registration</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-users card-icon"></i>
+      <h3 class="card-title">Batch</h3>
+    </div>
+    <button class="card-button" (click)="goTo('batch')">Manage Batches</button>
+  </div>
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-users card-icon"></i>
+      <h3 class="card-title">Batch Transfer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('batchtransfer')">Manage Batch Transfer</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-book-open card-icon"></i>
+      <h3 class="card-title">Course</h3>
+    </div>
+    <button class="card-button" (click)="goTo('course')">Explore Courses</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-book-open card-icon"></i>
+      <h3 class="card-title">Course Combo</h3>
+    </div>
+    <button class="card-button" (click)="goTo('coursecombo')">View CourseCombo</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chalkboard card-icon"></i>
+      <h3 class="card-title">ClassRoom</h3>
+    </div>
+    <button class="card-button" (click)="goTo('classroom')">View Classrooms</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chalkboard card-icon"></i>
+      <h3 class="card-title">Trainee Attendance</h3>
+    </div>
+    <button class="card-button" (click)="goTo('traineeattendance')">Trainee Attendance list</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chalkboard card-icon"></i>
+      <h3 class="card-title">Class Schedule</h3>
+    </div>
+    <button class="card-button" (click)="goTo('class-schedule')">View Class Schedule</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-calendar-day card-icon"></i>
+      <h3 class="card-title">Day</h3>
+    </div>
+    <button class="card-button" (click)="goTo('day')">Plan Days</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-calendar-day card-icon"></i>
+      <h3 class="card-title">Daily Sales Record</h3>
+    </div>
+    <button class="card-button" (click)="goTo('dailysalesrecord')">View Sales Record</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-calendar-day card-icon"></i>
+      <h3 class="card-title">Daily Sales Report</h3>
+    </div>
+    <button class="card-button" (click)="goTo('dailysalesreport')">View Sales Report</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-building card-icon"></i>
+      <h3 class="card-title">Department</h3>
+    </div>
+    <button class="card-button" (click)="goTo('department')">View Departments</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-id-badge card-icon"></i>
+      <h3 class="card-title">Designation</h3>
+    </div>
+    <button class="card-button" (click)="goTo('designation')">View Designations</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-tie card-icon"></i>
+      <h3 class="card-title">Employee</h3>
+    </div>
+    <button class="card-button" (click)="goTo('employee')">View Employees</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-graduate card-icon"></i>
+      <h3 class="card-title">Instructor</h3>
+    </div>
+    <button class="card-button" (click)="goTo('instructor')">Find Instructors</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-hand-holding-usd card-icon"></i>
+      <h3 class="card-title">Offer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('offer')">View Offers</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-clock card-icon"></i>
+      <h3 class="card-title">Time Slot</h3>
+    </div>
+    <button class="card-button" (click)="goTo('slot')">Book Slots</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Visitor</h3>
+    </div>
+    <button class="card-button" (click)="goTo('visitor')">Track Visitors</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Vistor Transfer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('visitorassignment')">Vistor Transfer</button>
+  </div>
+
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Money Receipt</h3>
+    </div>
+    <button class="card-button" (click)="goTo('money-receipt')">Money Receipt</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Role Management</h3>
+    </div>
+    <button class="card-button" (click)="goTo('role')">Role Management</button>
+  </div>
+
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Assessment</h3>
+    </div>
+    <button class="card-button" (click)="goTo('assessment')">Assessement</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Recommendation</h3>
+    </div>
+    <button class="card-button" (click)="goTo('recommendation')">Manage Recommendation</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-person-booth card-icon"></i>
+      <h3 class="card-title">Certificate</h3>
+    </div>
+    <button class="card-button" (click)="goTo('certificate')">Issue Certificate</button>
+  </div>
+
+</div>-->
+<!--=====================================-->
+
+<div class="dashboard">
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-plus card-icon"></i> <!-- Admission -->
+      <h3 class="card-title">Admission</h3>
+    </div>
+    <button class="card-button" (click)="goTo('admission')">View Admission</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-clipboard-list card-icon"></i> <!-- Registration -->
+      <h3 class="card-title">Registration</h3>
+    </div>
+    <button class="card-button" (click)="goTo('registration')">View Registration</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-users card-icon"></i> <!-- Batch -->
+      <h3 class="card-title">Batch</h3>
+    </div>
+    <button class="card-button" (click)="goTo('batch')">Manage Batches</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-random card-icon"></i> <!-- Batch Transfer -->
+      <h3 class="card-title">Batch Transfer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('batchtransfer')">Manage Batch Transfer</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-book-open card-icon"></i> <!-- Course -->
+      <h3 class="card-title">Course</h3>
+    </div>
+    <button class="card-button" (click)="goTo('course')">Explore Courses</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-layer-group card-icon"></i> <!-- Course Combo -->
+      <h3 class="card-title">Course Combo</h3>
+    </div>
+    <button class="card-button" (click)="goTo('coursecombo')">View CourseCombo</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chalkboard-teacher card-icon"></i> <!-- Classroom -->
+      <h3 class="card-title">ClassRoom</h3>
+    </div>
+    <button class="card-button" (click)="goTo('classroom')">View Classrooms</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-check card-icon"></i> <!-- Trainee Attendance -->
+      <h3 class="card-title">Trainee Attendance</h3>
+    </div>
+    <button class="card-button" (click)="goTo('traineeattendance')">Trainee Attendance list</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-calendar-alt card-icon"></i> <!-- Class Schedule -->
+      <h3 class="card-title">Class Schedule</h3>
+    </div>
+    <button class="card-button" (click)="goTo('class-schedule')">View Class Schedule</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-calendar-day card-icon"></i> <!-- Day -->
+      <h3 class="card-title">Day</h3>
+    </div>
+    <button class="card-button" (click)="goTo('day')">Plan Days</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-receipt card-icon"></i> <!-- Daily Sales Record -->
+      <h3 class="card-title">Daily Sales Record</h3>
+    </div>
+    <button class="card-button" (click)="goTo('dailysalesrecord')">View Sales Record</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chart-line card-icon"></i> <!-- Daily Sales Report -->
+      <h3 class="card-title">Daily Sales Report</h3>
+    </div>
+    <button class="card-button" (click)="goTo('dailysalesreport')">View Sales Report</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-building card-icon"></i> <!-- Department -->
+      <h3 class="card-title">Department</h3>
+    </div>
+    <button class="card-button" (click)="goTo('department')">View Departments</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-id-badge card-icon"></i> <!-- Designation -->
+      <h3 class="card-title">Designation</h3>
+    </div>
+    <button class="card-button" (click)="goTo('designation')">View Designations</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-tie card-icon"></i> <!-- Employee -->
+      <h3 class="card-title">Employee</h3>
+    </div>
+    <button class="card-button" (click)="goTo('employee')">View Employees</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-chalkboard-teacher card-icon"></i> <!-- Instructor -->
+      <h3 class="card-title">Instructor</h3>
+    </div>
+    <button class="card-button" (click)="goTo('instructor')">Find Instructors</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-hand-holding-usd card-icon"></i> <!-- Offer -->
+      <h3 class="card-title">Offer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('offer')">View Offers</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-clock card-icon"></i> <!-- Time Slot -->
+      <h3 class="card-title">Time Slot</h3>
+    </div>
+    <button class="card-button" (click)="goTo('slot')">Book Slots</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-friends card-icon"></i> <!-- Visitor -->
+      <h3 class="card-title">Visitor</h3>
+    </div>
+    <button class="card-button" (click)="goTo('visitor')">Track Visitors</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-exchange-alt card-icon"></i> <!-- Visitor Transfer -->
+      <h3 class="card-title">Visitor Transfer</h3>
+    </div>
+    <button class="card-button" (click)="goTo('visitorassignment')">Visitor Transfer</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-file-invoice-dollar card-icon"></i> <!-- Money Receipt -->
+      <h3 class="card-title">Money Receipt</h3>
+    </div>
+    <button class="card-button" (click)="goTo('money-receipt')">Money Receipt</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-user-shield card-icon"></i> <!-- Role Management -->
+      <h3 class="card-title">Role Management</h3>
+    </div>
+    <button class="card-button" (click)="goTo('role')">Role Management</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-tasks card-icon"></i> <!-- Assessment -->
+      <h3 class="card-title">Assessment</h3>
+    </div>
+    <button class="card-button" (click)="goTo('assessment')">Assessment</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-thumbs-up card-icon"></i> <!-- Recommendation -->
+      <h3 class="card-title">Recommendation</h3>
+    </div>
+    <button class="card-button" (click)="goTo('recommendation')">Manage Recommendation</button>
+  </div>
+
+  <div class="card">
+    <div class="card-content">
+      <i class="fas fa-certificate card-icon"></i> <!-- Certificate -->
+      <h3 class="card-title">Certificate</h3>
+    </div>
+    <button class="card-button" (click)="goTo('certificate')">Issue Certificate</button>
+  </div>
+
+</div>

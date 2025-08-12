@@ -1,0 +1,215 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Time Slot List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()"> Add Time Slot</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select d-inline-block w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5 per page</option>
+        <option value="10">10 per page</option>
+        <option value="20">20 per page</option>
+        <option value="50">50 per page</option>
+      </select>
+    </div>
+
+    <!-- New dropdown filter -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="timeSlotType">Slot Type</option>
+        <option value="startTime">Start Time</option>
+        <option value="endTime">End Time</option>
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  @if (filteredList && filteredList.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('timeSlotType')" class="sortable">
+          Slot Type
+          <span *ngIf="sortColumn === 'timeSlotType'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('startTime')" class="sortable">
+          Start Time
+          <span *ngIf="sortColumn === 'startTime'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('endTime')" class="sortable">
+          End Time
+          <span *ngIf="sortColumn === 'endTime'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th>Time Duration</th> <!-- New column -->
+        <th (click)="sort('isActive')" class="sortable">
+          Is Active?
+          <span *ngIf="sortColumn === 'isActive'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (slot of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ slot.timeSlotType }}</td>
+        <td>{{ slot.startTime }}</td>
+        <td>{{ slot.endTime }}</td>
+        <td>{{ calculateDuration(slot.startTime, slot.endTime) }}</td>
+        <td>
+          <span class="badge" [ngClass]="slot.isActive ? 'bg-success' : 'bg-secondary'">
+            {{ slot.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onDetails(slot)">Details</button> ||
+          <button class="btn btn-primary" (click)="onEdit(slot)">Edit</button> ||
+          <button class="btn btn-danger" (click)="onDelete(slot)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Time Slots Found</h5>
+  }
+</div>
+
+<!-- Slot Modal -->
+<div class="modal" id="slotModal" #slotModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        @if(slotForm.value.slotID != 0) {
+        <h4 class="modal-title">Update Time Slot</h4>
+        } @else {
+        <h4 class="modal-title">Add Time Slot</h4>
+        }
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="slotForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="slotID">
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Slot Type</label>
+              <input type="text" formControlName="timeSlotType" class="form-control" placeholder="e.g., Morning, Afternoon, Evening">
+              @if (slotForm.get('timeSlotType')?.invalid && (slotForm.get('timeSlotType')?.dirty || slotForm.get('timeSlotType')?.touched)) {
+              <div class="text-danger">Slot type is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Start Time</label>
+              <input type="time" formControlName="startTime" class="form-control" step="300">
+              @if (slotForm.get('startTime')?.invalid && (slotForm.get('startTime')?.dirty || slotForm.get('startTime')?.touched)) {
+              <div class="text-danger">Valid start time is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>End Time</label>
+              <input type="time" formControlName="endTime" class="form-control" step="300">
+              @if (slotForm.get('endTime')?.invalid && (slotForm.get('endTime')?.dirty || slotForm.get('endTime')?.touched)) {
+              <div class="text-danger">Valid end time is required</div>
+              }
+            </div>
+          </div>
+
+          @if (slotForm.errors?.['timeError']) {
+          <div class="alert alert-danger">End time must be after start time</div>
+          }
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <div class="form-check mt-4 pt-3">
+                <input type="checkbox" formControlName="isActive" class="form-check-input">
+                <label class="form-check-label">Is Active?</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          @if (slotForm.value.slotID == 0) {
+          <button type="submit" [disabled]="slotForm.invalid || isSubmitting" class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Saving...</span>
+            } @else {
+            Save
+            }
+          </button>
+          } @else {
+          <button type="submit" [disabled]="slotForm.invalid || isSubmitting" class="btn btn-success">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Updating...</span>
+            } @else {
+            Update
+            }
+          </button>
+          }
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white">
+        <h4 class="modal-title">Time Slot Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedSlot">
+        <p><strong>Slot Type:</strong> {{ selectedSlot.timeSlotType }}</p>
+        <p><strong>Start Time:</strong> {{ selectedSlot.startTime }}</p>
+        <p><strong>End Time:</strong> {{ selectedSlot.endTime }}</p>
+        <p>
+          <strong>Status:</strong>
+          <span class="badge" [ngClass]="selectedSlot.isActive ? 'bg-success' : 'bg-secondary'">
+            {{ selectedSlot.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,181 @@
+/* Dashboard container */
+.dashboard {
+  background-color: #f0f4f8;
+  padding: 80px 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 25px;
+  justify-content: center;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Card styling */
+.card {
+  background-color: #ffffff;
+  padding: 25px 20px 30px;
+  border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  width: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
+}
+
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+  }
+
+/* Card content spacing */
+.card-content {
+  margin-bottom: 18px;
+}
+
+/* Card icon styling */
+.card-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+  transition: color 0.3s ease;
+}
+
+/* Icon colors */
+.card:nth-child(1) .card-icon {
+  color: #0d6efd;
+}
+/* Admission - Bright Blue */
+.card:nth-child(2) .card-icon {
+  color: #20c997;
+}
+/* Registration - Teal */
+.card:nth-child(3) .card-icon {
+  color: #ffc107;
+}
+/* Batch - Amber */
+.card:nth-child(4) .card-icon {
+  color: #6610f2;
+}
+/* Batch Transfer - Purple */
+.card:nth-child(5) .card-icon {
+  color: #17a2b8;
+}
+/* Course - Cyan */
+.card:nth-child(6) .card-icon {
+  color: #fd7e14;
+}
+/* Course Combo - Orange */
+.card:nth-child(7) .card-icon {
+  color: #6f42c1;
+}
+/* Classroom - Violet */
+.card:nth-child(8) .card-icon {
+  color: #198754;
+}
+/* Trainee Attendance - Green */
+.card:nth-child(9) .card-icon {
+  color: #0dcaf0;
+}
+/* Class Schedule - Light Blue */
+.card:nth-child(10) .card-icon {
+  color: #dc3545;
+}
+/* Day - Red */
+.card:nth-child(11) .card-icon {
+  color: #ffc107;
+}
+/* Daily Sales Record - Amber */
+.card:nth-child(12) .card-icon {
+  color: #0d6efd;
+}
+/* Daily Sales Report - Bright Blue */
+.card:nth-child(13) .card-icon {
+  color: #6c757d;
+}
+/* Department - Gray */
+.card:nth-child(14) .card-icon {
+  color: #20c997;
+}
+/* Designation - Teal */
+.card:nth-child(15) .card-icon {
+  color: #fd7e14;
+}
+/* Employee - Orange */
+.card:nth-child(16) .card-icon {
+  color: #6610f2;
+}
+/* Instructor - Purple */
+.card:nth-child(17) .card-icon {
+  color: #0dcaf0;
+}
+/* Offer - Light Blue */
+.card:nth-child(18) .card-icon {
+  color: #ffc107;
+}
+/* Time Slot - Amber */
+.card:nth-child(19) .card-icon {
+  color: #198754;
+}
+/* Visitor - Green */
+.card:nth-child(20) .card-icon {
+  color: #dc3545;
+}
+/* Visitor Transfer - Red */
+.card:nth-child(21) .card-icon {
+  color: #fd7e14;
+}
+/* Money Receipt - Orange */
+.card:nth-child(22) .card-icon {
+  color: #0d6efd;
+}
+/* Role Management - Bright Blue */
+.card:nth-child(23) .card-icon {
+  color: #6610f2;
+}
+/* Assessment - Purple */
+.card:nth-child(24) .card-icon {
+  color: #198754;
+}
+/* Recommendation - Green */
+.card:nth-child(25) .card-icon {
+  color: #ffc107;
+}
+/* Certificate - Amber */
+
+/* Card title styling */
+.card-title {
+  margin-top: 6px;
+  margin-bottom: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #222;
+}
+
+/* Button styling */
+.card-button {
+  background: transparent;
+  color: inherit; /* inherit from icon color */
+  border: 2px solid currentColor;
+  padding: 10px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+  .card-button:hover {
+    background-color: #0b5ed7; /* dark blue as example */
+    color: #fff;
+    box-shadow: 0 6px 10px rgba(0,0,0,0.12);
+  }
+
+
+
+  .card-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0,123,255,0.5);
+  }

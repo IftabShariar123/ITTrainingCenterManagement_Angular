@@ -1,0 +1,320 @@
+<!--<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Department List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Department</button>
+    </div>
+  </div>-->
+<!-- Items per page selector -->
+<!--<div class="row mt-3">
+  <div class="col-md-6">
+    <div class="input-group mb-3">
+      <label class="input-group-text" for="itemsPerPage">Items per page:</label>
+      <select class="form-select" id="itemsPerPage" (change)="onItemsPerPageChange($event)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="paginatedDepartments && paginatedDepartments.length > 0; else noDepartments">
+  <table class="table table-bordered table-striped mt-3">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th>Department Name</th>
+        <th>Remarks</th>
+        <th>Status</th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of paginatedDepartments; let i = index">
+        <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+        <td>{{ item.departmentName }}</td>
+        <td>{{ item.remarks || '-' }}</td>
+        <td>
+          <span [class]="item.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ item.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info btn-sm me-1" (click)="onDetails(item)">Details</button>||
+          <button class="btn btn-primary btn-sm" (click)="onEdit(item)">Edit</button>||
+          <button class="btn btn-danger btn-sm ms-2" (click)="onDelete(item)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>-->
+<!-- Pagination controls -->
+<!--<nav aria-label="Page navigation" *ngIf="totalPages > 1">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+
+        <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+
+  <ng-template #noDepartments>
+    <h5 class="text-center p-5">No Departments Found</h5>
+  </ng-template>
+</div>-->
+<!-- Modal -->
+<!--<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog">
+    <div class="modal-content">-->
+<!-- Modal Header -->
+<!--<div class="modal-header bg-info">
+  <h4 class="modal-title">
+    {{ departmentForm.value.departmentId != 0 ? 'Update' : 'Add' }} Department
+  </h4>
+  <button type="button" class="btn-close" (click)="closeModal()"></button>
+</div>-->
+<!-- Modal Form -->
+<!--<form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="mb-3">
+      <label class="form-label">Department Name*</label>
+      <input type="text" formControlName="departmentName" class="form-control"
+             [class.is-invalid]="departmentForm.get('departmentName')?.invalid && departmentForm.get('departmentName')?.touched">
+      <div class="invalid-feedback" *ngIf="departmentForm.get('departmentName')?.invalid && departmentForm.get('departmentName')?.touched">
+        Department name is required
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Remarks</label>
+      <textarea formControlName="remarks" class="form-control" rows="2" placeholder="Optional remarks"></textarea>
+    </div>
+
+    <div class="mb-3 form-check">
+      <input type="checkbox" formControlName="isActive" class="form-check-input" id="isActiveCheck">
+      <label class="form-check-label" for="isActiveCheck">Is Active</label>
+    </div>
+  </div>-->
+<!-- Modal Footer -->
+<!--<div class="modal-footer">
+          <button type="submit" [disabled]="departmentForm.invalid" class="btn btn-primary">
+            {{ departmentForm.value.departmentId != 0 ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>-->
+<!-- Details Modal -->
+<!--<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Department Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedDepartment">
+        <p><strong>ID:</strong> {{ selectedDepartment.departmentId }}</p>
+        <p><strong>Name:</strong> {{ selectedDepartment.departmentName }}</p>
+        <p><strong>Remarks:</strong> {{ selectedDepartment.remarks || 'N/A' }}</p>
+        <p><strong>Is Active:</strong> {{ selectedDepartment.isActive ? 'Yes' : 'No' }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>-->
+
+
+
+
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center">
+    <div class="col-md-4">
+      <h3>Department List</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Department</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Search by dropdown -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="departmentName">Department Name</option>
+        <option value="remarks">Remarks</option>
+        <!--<option value="isActive">Status</option>-->
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  @if (filteredList && filteredList.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('departmentName')" class="sortable">
+          Department Name
+          <span *ngIf="sortColumn === 'departmentName'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('remarks')" class="sortable">
+          Remarks
+          <span *ngIf="sortColumn === 'remarks'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('isActive')" class="sortable">
+          Status
+          <span *ngIf="sortColumn === 'isActive'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (dept of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ dept.departmentName }}</td>
+        <td>{{ dept.remarks || '-' }}</td>
+        <td>
+          <span [class]="dept.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ dept.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onDetails(dept)">Details</button> ||
+          <button class="btn btn-primary" (click)="onEdit(dept)">Edit</button> ||
+          <button class="btn btn-danger" (click)="onDelete(dept)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Departments Found</h5>
+  }
+</div>
+
+<!-- Department Modal -->
+<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">
+          {{ departmentForm.value.departmentId != 0 ? 'Update' : 'Add' }} Department
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <!-- Modal Form -->
+      <form [formGroup]="departmentForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Department Name*</label>
+            <input type="text" formControlName="departmentName" class="form-control"
+                   [class.is-invalid]="departmentForm.get('departmentName')?.invalid && departmentForm.get('departmentName')?.touched">
+            <div class="invalid-feedback" *ngIf="departmentForm.get('departmentName')?.invalid && departmentForm.get('departmentName')?.touched">
+              Department name is required
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Remarks</label>
+            <textarea formControlName="remarks" class="form-control" rows="2" placeholder="Optional remarks"></textarea>
+          </div>
+
+          <div class="mb-3 form-check">
+            <input type="checkbox" formControlName="isActive" class="form-check-input" id="isActiveCheck">
+            <label class="form-check-label" for="isActiveCheck">Is Active</label>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="submit" [disabled]="departmentForm.invalid || isSubmitting" class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">{{ departmentForm.value.departmentId != 0 ? 'Updating...' : 'Saving...' }}</span>
+            } @else {
+            {{ departmentForm.value.departmentId != 0 ? 'Update' : 'Save' }}
+            }
+          </button>
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">Department Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedDepartment">
+        <p><strong>Department Name:</strong> {{ selectedDepartment.departmentName }}</p>
+        <p><strong>Remarks:</strong> {{ selectedDepartment.remarks || 'N/A' }}</p>
+        <p>
+          <strong>Status:</strong>
+          <span [class]="selectedDepartment.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ selectedDepartment.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

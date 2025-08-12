@@ -1,0 +1,19 @@
+/* Ensure the autocomplete panel appears above the modal */
+.cdk-overlay-container {
+  z-index: 1100 !important;
+}
+
+/* Style adjustments for the modal */
+.modal {
+  z-index: 1050;
+}
+
+/* Material form field styling */
+.mat-form-field {
+  width: 100%;
+}
+
+/* Make sure the autocomplete panel has proper styling */
+.mat-autocomplete-panel {
+  max-height: 300px !important;
+}

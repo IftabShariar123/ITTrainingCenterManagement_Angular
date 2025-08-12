@@ -1,0 +1,289 @@
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center" >
+    <div class="col-md-4">
+      <h3>Visitor List</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openVisitorModal()">Add Visitor</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Add this dropdown filter -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="visitorName">Visitor Name</option>
+        <option value="contactNo">Contact No</option>
+        <option value="visitPurpose">Visit Purpose</option>
+        <option value="employeeId">Employee</option>
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+
+  @if (filteredList && filteredList.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('visitorName')" class="sortable">
+          Visitor Name
+          <span *ngIf="sortColumn === 'visitorName'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('contactNo')" class="sortable">
+          Contact
+          <span *ngIf="sortColumn === 'contactNo'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('visitPurpose')" class="sortable">
+          Visit Purpose
+          <span *ngIf="sortColumn === 'visitPurpose'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('employeeId')" class="sortable">
+          Employee
+          <span *ngIf="sortColumn === 'employeeId'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (visitor of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ visitor.visitorName }}</td>
+        <td>{{ visitor.contactNo }}</td>
+        <td>{{ visitor.visitPurpose }}</td>
+        <td>{{ visitor.employeeName || getEmployeeName(visitor.employeeId) }}</td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onVisitorDetails(visitor)">Details</button> ||
+          <button class="btn btn-primary" (click)="onVisitorEdit(visitor)">Edit</button> ||
+          <button class="btn btn-danger" (click)="onVisitorDelete(visitor)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Visitors Found</h5>
+  }
+</div>
+
+<!-- Visitor Modal -->
+<div class="modal" id="visitorModal" #visitorModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        @if(visitorForm.value.visitorId != 0) {
+        <h4 class="modal-title">Update Visitor</h4>
+        } @else {
+        <h4 class="modal-title">Add Visitor</h4>
+        }
+        <button type="button" class="btn-close" (click)="closeVisitorModal()"></button>
+      </div>
+
+      <form [formGroup]="visitorForm" (ngSubmit)="onVisitorSubmit()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="visitorId">
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Visitor Name</label>
+              <input type="text" formControlName="visitorName" class="form-control" placeholder="Enter visitor name">
+              @if (visitorForm.get('visitorName')?.invalid && (visitorForm.get('visitorName')?.dirty || visitorForm.get('visitorName')?.touched)) {
+              <div class="text-danger">Visitor name is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Visitor Type</label>
+              <select formControlName="visitorType" class="form-control" (change)="onVisitorTypeChange()">
+                <option value="">Select Visitor Type</option>
+                <option value="Individual">Individual</option>
+                <option value="Organization">Organization</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Contact No</label>
+              <input type="text" formControlName="contactNo" class="form-control" placeholder="Enter contact no">
+              @if (visitorForm.get('contactNo')?.invalid && (visitorForm.get('contactNo')?.dirty || visitorForm.get('contactNo')?.touched)) {
+              <div class="text-danger">Contact number is required</div>
+              }
+            </div>
+            <div class="col-md-6" *ngIf="showCompanyNameField">
+              <label>Company name</label>
+              <input type="text" formControlName="companyName" class="form-control" placeholder="Company name">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Email</label>
+              <input type="email" formControlName="email" class="form-control" placeholder="Enter email">
+              @if (visitorForm.get('email')?.invalid && (visitorForm.get('email')?.dirty || visitorForm.get('email')?.touched)) {
+              <div class="text-danger">Valid email is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Visit Date & Time</label>
+              <input type="datetime-local" formControlName="visitDateTime" class="form-control">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Visit Purpose</label>
+              <input type="text" formControlName="visitPurpose" class="form-control" placeholder="Purpose of visit">
+              @if (visitorForm.get('visitPurpose')?.invalid && (visitorForm.get('visitPurpose')?.dirty || visitorForm.get('visitPurpose')?.touched)) {
+              <div class="text-danger">Visit purpose is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Expected Course</label>
+              <input type="text" formControlName="expectedCourse" class="form-control" placeholder="Expected course">
+            </div>
+            <div class="col-md-6">
+              <label>Visitor's Source</label>
+              <select formControlName="visitorSource" class="form-control" (change)="onVisitorSourceChange()">
+                <option value="">-- Select Source --</option>
+                <option value="Referral">Referral</option>
+                <option value="Walking">Walking</option>
+                <option value="Social Media">Social Media</option>
+                <option value="Others">Others</option>
+              </select>
+            </div>
+            <div class="col-md-6" *ngIf="showReferenceField">
+              <label>Reference</label>
+              <input type="text" formControlName="reference" class="form-control" placeholder="Reference">
+            </div>
+            
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Address</label>
+              <input type="text" formControlName="address" class="form-control" placeholder="Enter address">
+            </div>
+            <div class="col-md-6">
+              <label>Highest Education</label>
+              <input type="text" formControlName="educationLevel" class="form-control" placeholder="Enter education level">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            
+            <div class="col-md-6">
+              <label>Create by</label>
+              <select formControlName="employeeId" class="form-control">
+                <option value="">Select Employee</option>
+                @for (employee of employeeList; track employee.employeeId) {
+                <option [value]="employee.employeeId">{{ employee.employeeName }}</option>
+                }
+              </select>
+              @if (visitorForm.get('employeeId')?.invalid && (visitorForm.get('employeeId')?.dirty || visitorForm.get('employeeId')?.touched)) {
+              <div class="text-danger">Employee is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Employee Comments</label>
+              <textarea formControlName="employeeComments" rows="3" class="form-control" placeholder="Enter employee comments"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          @if (visitorForm.value.visitorId == 0) {
+          <button type="submit" [disabled]="visitorForm.invalid || isSubmitting" class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Saving...</span>
+            } @else {
+            Save
+            }
+          </button>
+          } @else {
+          <button type="submit" [disabled]="visitorForm.invalid || isSubmitting" class="btn btn-success">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Updating...</span>
+            } @else {
+            Update
+            }
+          </button>
+          }
+          <button type="button" class="btn btn-danger" (click)="closeVisitorModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Visitor Details Modal -->
+<div class="modal" id="visitorDetailsModal" #visitorDetailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white">
+        <h4 class="modal-title">Visitor Details</h4>
+        <button type="button" class="btn-close" (click)="closeVisitorDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedVisitor">
+        <p><strong>Visitor Name:</strong> {{ selectedVisitor.visitorName }}</p>
+        <p><strong>Visitor No:</strong> {{ selectedVisitor.visitorNo }}</p>
+        <p><strong>Contact No:</strong> {{ selectedVisitor.contactNo }}</p>
+        <p><strong>Email:</strong> {{ selectedVisitor.email }}</p>
+        <p><strong>Visit Date:</strong> {{ selectedVisitor.visitDateTime | date:'medium' }}</p>
+        <p><strong>Visit Purpose:</strong> {{ selectedVisitor.visitPurpose }}</p>
+        <p><strong>Expected Course:</strong> {{ selectedVisitor.expectedCourse }}</p>
+        <p><strong>Address:</strong> {{ selectedVisitor.address }}</p>
+        <p><strong>Education Level:</strong> {{ selectedVisitor.educationLevel }}</p>
+        <p><strong>Visitor Type:</strong> {{ selectedVisitor.visitorType }}</p>
+        <p><strong>Employee:</strong> {{ selectedVisitor.employeeName || getEmployeeName(selectedVisitor.employeeId) }}</p>
+        <p><strong>Employee Comments:</strong> {{ selectedVisitor.employeeComments }}</p>
+        <p><strong>Visitor's Source:</strong> {{ selectedVisitor.visitorSource }}</p>
+        <p><strong>Reference:</strong> {{ selectedVisitor.reference }}</p>
+        <p><strong>Company name:</strong> {{ selectedVisitor.companyName }}</p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeVisitorDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

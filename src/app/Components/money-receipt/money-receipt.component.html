@@ -1,0 +1,354 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Money Receipt List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Money Receipt</button>
+    </div>
+  </div>
+
+  <!-- Items per page selector -->
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="itemsPerPage">Items per page:</label>
+        <select class="form-select" id="itemsPerPage" (change)="onItemsPerPageChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="paginatedReceipts && paginatedReceipts.length > 0; else noReceipts">
+    <table class="table table-bordered table-striped mt-3">
+      <thead>
+        <tr>
+          <th>SL No</th>
+          <th>Receipt No</th>
+          <th>Date</th>
+          <th>Category</th>
+          <th>Amount</th>
+          <th>Payment Mode</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedReceipts; let i = index">
+          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+          <td>{{ item.moneyReceiptNo }}</td>
+          <td>{{ item.receiptDate}}</td>
+          <td>{{ item.category }}</td>
+          <td>{{ item.paidAmount | currency:'BDT' }}</td>
+          <td>{{ item.paymentMode }}</td>
+          <td class="text-center">
+            <button class="btn btn-info btn-sm me-1" (click)="onDetails(item)">Details</button>||
+            <button class="btn btn-primary btn-sm" (click)="onEdit(item)">Edit</button>||
+            <button class="btn btn-danger btn-sm ms-2" (click)="onDelete(item)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <nav aria-label="Page navigation" *ngIf="totalPages > 1">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+
+        <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+
+  <ng-template #noReceipts>
+    <h5 class="text-center p-5">No Money Receipts Found</h5>
+  </ng-template>
+</div>
+
+<!-- Create/Edit Modal -->
+<div class="modal" id="receiptModal" #receiptModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">
+          {{ receiptForm.value.moneyReceiptId != 0 ? 'Update' : 'Add' }} Money Receipt
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="receiptForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Receipt Date*</label>
+                <input type="date" formControlName="receiptDate" class="form-control"
+                       [class.is-invalid]="receiptForm.get('receiptDate')?.invalid && receiptForm.get('receiptDate')?.touched">
+                <div class="invalid-feedback">Receipt date is required</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Category*</label>
+                <select formControlName="category" class="form-select"
+                        [class.is-invalid]="receiptForm.get('category')?.invalid && receiptForm.get('category')?.touched"
+                        (change)="onCategoryChange()">
+                  <option value="">Select Category</option>
+                  <option value="Course">Course</option>
+                  <option value="Registration Fee">Registration Fee</option>
+                </select>
+                <div class="invalid-feedback">Category is required</div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Visitor</label>
+                <select formControlName="visitorId" class="form-select" (change)="onVisitorSelected()">
+                  <option value="">Select Visitor</option>
+                  <option *ngFor="let visitor of visitors" [value]="visitor.visitorId">
+                    {{ visitor.visitorName }} - {{ visitor.contactNo }}
+                  </option>
+                </select>
+                <small class="text-muted" *ngIf="registrationNumbersDisplay && receiptForm.get('category')?.value === 'Registration Fee'">
+                  Registration Nos: {{ registrationNumbersDisplay }}
+                </small>
+              </div>
+
+              <div class="mb-3" *ngIf="receiptForm.get('category')?.value === 'Course'">
+                <label class="form-label">Admission No</label>
+                <select formControlName="admissionNo" class="form-select" (change)="onAdmissionChange()">
+                  <option value="">Select Admission No</option>
+                  <option *ngFor="let admission of admissionNumbers"
+                          [ngValue]="admission.admissionNo">
+                    <!-- Use ngValue for proper binding -->
+                    {{ admission.admissionNo }}
+                  </option>
+                </select>
+                <small class="text-muted" *ngIf="invoiceNumbersDisplay">Existing Invoices: {{ invoiceNumbersDisplay }}</small>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <div class="mb-3">
+                <label class="form-label">Payment Mode*</label>
+                <select formControlName="paymentMode" class="form-select"
+                        [class.is-invalid]="receiptForm.get('paymentMode')?.invalid && receiptForm.get('paymentMode')?.touched"
+                        (change)="onPaymentModeChange()">
+                  <option value="">Select Payment Mode</option>
+                  <option value="Cash">Cash</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="MFS">Mobile Banking</option>
+                  <option value="Card">Card</option>
+                </select>
+                <div class="invalid-feedback">Payment mode is required</div>
+              </div>
+
+              <div class="mb-3" *ngIf="showChequeFields">
+                <label class="form-label">Cheque No</label>
+                <input type="text" formControlName="chequeNo" class="form-control">
+              </div>
+
+              <div class="mb-3" *ngIf="showChequeFields || showCardFields">
+                <label class="form-label">Bank Name</label>
+                <input type="text" formControlName="bankName" class="form-control">
+              </div>
+
+              <div class="mb-3" *ngIf="showMfsFields">
+                <label class="form-label">MFS Provider</label>
+                <select formControlName="mfsName" class="form-select">
+                  <option value="">Select Provider</option>
+                  <option value="Bkash">Bkash</option>
+                  <option value="Rocket">Rocket</option>
+                  <option value="Nagad">Nagad</option>
+                </select>
+              </div>
+
+              <div class="mb-3" *ngIf="showMfsFields">
+                <label class="form-label">Transaction No</label>
+                <input type="text" formControlName="transactionNo" class="form-control">
+              </div>
+
+              <div class="mb-3" *ngIf="showCardFields">
+                <label class="form-label">Card No</label>
+                <input type="text" formControlName="debitOrCreditCardNo" class="form-control">
+              </div>
+            </div>
+          </div>
+
+   
+          <div class="row">
+            <div class="col-md-4" *ngIf="receiptForm.get('category')?.value === 'Course'">
+              <div *ngIf="showPaymentSummary && paymentSummary" class="row mt-3">
+                <div class="col-md-12">
+                  <div class="card border-primary">
+                    <div class="card-header bg-primary text-white">
+                      <h5 class="mb-0">Payment Summary</h5>
+                    </div>
+                    <div class="card-body">
+                      <div class="row">
+                        <div class="col-md-4">
+                          <p><strong>Total After Discounts:</strong> {{paymentSummary.totalAfterDiscounts | currency:'BDT'}}</p>
+                          <p *ngIf="receiptForm.get('admissionNo')?.value">
+                            <small>Selected Admission: {{receiptForm.get('admissionNo')?.value}}</small>
+                          </p>
+                        </div>
+                        <div class="col-md-4">
+                          <p><strong>Total Paid:</strong> {{paymentSummary.totalPaid | currency:'BDT'}}</p>
+                        </div>
+                        
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Payable Amount*</label>
+                <input type="number" formControlName="payableAmount" class="form-control"
+                       [class.is-invalid]="receiptForm.get('payableAmount')?.invalid && receiptForm.get('payableAmount')?.touched"
+                       (change)="calculateDueAmount()"
+                       [readonly]="receiptForm.get('category')?.value === 'Course'">
+                <div class="invalid-feedback">Payable amount is required</div>
+                <small class="text-muted" *ngIf="receiptForm.get('category')?.value === 'Course'">
+                  Calculated from visitor's remaining balance
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <div class="mb-3">
+                <label class="form-label">Paid Amount*</label>
+                <input type="number" formControlName="paidAmount" class="form-control"
+                       [class.is-invalid]="receiptForm.get('paidAmount')?.invalid && receiptForm.get('paidAmount')?.touched"
+                       (input)="calculateDueAmount()">
+                <div class="invalid-feedback">Paid amount is required</div>
+              </div>
+            </div>
+
+            <div class="col-md-4" *ngIf="receiptForm.get('category')?.value === 'Course'">
+              <div class="mb-3">
+                <label class="form-label">Due Amount</label>
+                <input type="number" formControlName="dueAmount" class="form-control" readonly>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <!--<div class="col-md-6" *ngIf="receiptForm.get('category')?.value === 'Course'">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" formControlName="isFullPayment" id="fullPayment">
+      <label class="form-check-label" for="fullPayment">Full Payment</label>
+    </div>
+  </div>-->
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox"
+                     formControlName="isFullPayment" id="fullPayment"
+                     [disabled]="receiptForm.get('category')?.value === 'Registration Fee'">
+              <label class="form-check-label" for="fullPayment">Full Payment</label>
+            </div>
+
+            <div class="col-md-6" *ngIf="showInvoiceCheckbox">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="isInvoiceCreated" id="invoiceCreated">
+                <label class="form-check-label" for="invoiceCreated">Create Invoice</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label class="form-label">Remarks</label>
+                <textarea formControlName="remarks" class="form-control" rows="2"></textarea>
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="mb-3">
+                <label class="form-label">Created By</label>
+                <input type="text" formControlName="createdBy" class="form-control">
+                <div class="invalid-feedback">This field is required</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" [disabled]="receiptForm.invalid" class="btn btn-primary">
+            {{ receiptForm.value.moneyReceiptId != 0 ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Money Receipt Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedReceipt">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Basic Information</h6>
+            <p><strong>Receipt No:</strong> {{ selectedReceipt.moneyReceiptNo }}</p>
+            <p><strong>Date:</strong> {{ selectedReceipt.receiptDate | date:'mediumDate' }}</p>
+            <p><strong>Category:</strong> {{ selectedReceipt.category }}</p>
+            <p><strong>Payment Mode:</strong> {{ selectedReceipt.paymentMode }}</p>
+
+            <div *ngIf="selectedReceipt.category === 'Course'">
+              <p><strong>Admission No:</strong> {{ selectedReceipt.admissionNo || 'N/A' }}</p>
+              <p><strong>Full Payment:</strong> {{ selectedReceipt.isFullPayment ? 'Yes' : 'No' }}</p>
+            </div>
+
+            <div *ngIf="selectedReceipt.category === 'Registration Fee'">
+              <!--<p><strong>Visitor:</strong> {{ selectedReceipt.visitor?.visitorName || 'N/A' }}</p>-->
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <h6>Payment Information</h6>
+            <p><strong>Payable Amount:</strong> {{ selectedReceipt.payableAmount | currency:'BDT' }}</p>
+            <p><strong>Paid Amount:</strong> {{ selectedReceipt.paidAmount | currency:'BDT' }}</p>
+            <p><strong>Due Amount:</strong> {{ selectedReceipt.dueAmount | currency:'BDT' }}</p>
+
+            <div *ngIf="selectedReceipt.paymentMode === 'Cheque' || selectedReceipt.paymentMode === 'Card'">
+              <p><strong>Bank Name:</strong> {{ selectedReceipt.bankName || 'N/A' }}</p>
+              <p *ngIf="selectedReceipt.paymentMode === 'Cheque'"><strong>Cheque No:</strong> {{ selectedReceipt.chequeNo || 'N/A' }}</p>
+              <p *ngIf="selectedReceipt.paymentMode === 'Card'"><strong>Card No:</strong> {{ selectedReceipt.debitOrCreditCardNo || 'N/A' }}</p>
+            </div>
+
+            <div *ngIf="selectedReceipt.paymentMode === 'MFS'">
+              <p><strong>MFS Provider:</strong> {{ selectedReceipt.mfsName || 'N/A' }}</p>
+              <p><strong>Transaction No:</strong> {{ selectedReceipt.transactionNo || 'N/A' }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-3">
+          <div class="col-md-12">
+            <h6>Additional Information</h6>
+            <p><strong>Invoice Created:</strong> {{ selectedReceipt.isInvoiceCreated ? 'Yes' : 'No' }}</p>
+            <p><strong>Remarks:</strong> {{ selectedReceipt.remarks || 'N/A' }}</p>
+            <p><strong>Created By:</strong> {{ selectedReceipt.createdBy || 'none'}}</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

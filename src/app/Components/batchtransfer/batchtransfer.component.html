@@ -1,0 +1,92 @@
+<!-- src/app/components/batch-transfer/batch-transfer.component.html -->
+<div class="container mt-4">
+  <h2>Batch Transfer Management</h2>
+
+  <!-- ফর্ম সেকশন -->
+  <div class="card mb-4">
+    <div class="card-header">
+      {{ isEditing ? 'Edit Batch Transfer' : 'Add New Batch Transfer' }}
+    </div>
+    <div class="card-body">
+      <form #batchTransferForm="ngForm" (ngSubmit)="onSubmit(batchTransferForm)">
+        <div class="mb-3">
+          <label for="traineeId" class="form-label">Trainee</label>
+          <select class="form-control" id="traineeId"
+                  [(ngModel)]="currentBatchTransfer.traineeId"
+                  name="traineeId" required>
+            <option value="" disabled selected>Select a trainee</option>
+            <option *ngFor="let trainee of traineeList" [value]="trainee.traineeId">
+              {{ trainee.displayText }}
+            </option>
+          </select>
+        </div>
+
+
+        <div class="mb-3">
+          <label for="batchId" class="form-label">Batch</label>
+          <select class="form-control" id="batchId"
+                  [(ngModel)]="currentBatchTransfer.batchId"
+                  name="batchId" required>
+            <option value="" disabled selected>Select a batch</option>
+            <option *ngFor="let batch of batches" [value]="batch.batchId">
+              {{ batch.batchName }}
+            </option>
+          </select>
+        </div>
+
+
+        <!--<div class="mb-3">
+          <label for="createdDate" class="form-label">Created Date</label>
+          <input type="date" class="form-control" id="createdDate"
+                 [(ngModel)]="currentBatchTransfer.createdDate"
+                 name="createdDate">
+        </div>-->
+
+        <div class="mb-3">
+          <label for="transferDate" class="form-label">Transfer Date</label>
+          <input type="date" class="form-control" id="transferDate"
+                 [(ngModel)]="currentBatchTransfer.transferDate"
+                 name="transferDate">
+        </div>
+
+        <button type="submit" class="btn btn-primary me-2">
+          {{ isEditing ? 'Update' : 'Save' }}
+        </button>
+        <button type="button" class="btn btn-secondary"
+                (click)="resetForm(batchTransferForm)">
+          Cancel
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <hr>
+  <hr>
+  <!-- লিস্ট সেকশন -->
+  <div class="card">
+    <div class="card-header">
+      <h3 style="text-align:center"><u>Batch Transfer List</u></h3>
+    </div>
+    <div class="card-body">
+      <!-- Update the table in your HTML template -->
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Trainee Name</th>
+            <th>Batch Name</th>
+            <th>Created Date</th>
+            <th>Transfer Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transfer of batchTransfers">
+            <td>{{ getTraineeName(transfer.traineeId) }}</td>
+            <td>{{ getBatchName(transfer.batchId) }}</td>
+            <td>{{ transfer.createdDate || '--' }}</td>
+            <td>{{ transfer.transferDate || '--' }}</td>          
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,198 @@
+/* Custom navbar styling */
+.custom-navbar {
+  min-height: 3rem; /* Reduced from Bootstrap's default ~4rem */
+  padding-bottom: 1rem !important; /* Increased bottom padding */
+}
+
+/* Adjust body padding to match new navbar height */
+body {
+  padding-top: 5rem; /* Reduced from ~6rem to account for smaller navbar */
+}
+
+/* Adjust dropdown alignment */
+.dropdown-menu {
+  margin-top: 0.5rem; /* Better visual alignment with smaller navbar */
+}
+
+/* Optional: Adjust brand and menu items vertical alignment */
+.navbar-brand, .dropdown-toggle {
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Animated Logo Styles */
+#animated-logo {
+  height: 40px;
+  margin-left: 15px;
+  transition: all 0.3s ease;
+}
+
+  #animated-logo:hover #cpu-body {
+    fill: #2D3748;
+  }
+
+  #animated-logo:hover #cpu-core {
+    fill: #00FF9D;
+    opacity: 1 !important;
+  }
+
+  #animated-logo:hover #signal-wave {
+    stroke: #00FF9D;
+    stroke-width: 3;
+  }
+
+
+
+.footer-columns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+  .footer-column h5 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+
+    .footer-column ul li {
+      margin-bottom: 8px;
+    }
+
+      .footer-column ul li a {
+        text-decoration: none;
+        color: #007bff;
+        display: inline-flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+        .footer-column ul li a i {
+          font-size: 16px;
+          background-color: #03a2ff;
+          color: #fff;
+          padding: 8px;
+          border-radius: 50%;
+          transition: background-color 0.3s;
+        }
+
+        .footer-column ul li a:hover i {
+          background-color: #85d2ff;
+        }
+
+        /* Social Text Animation */
+        .footer-column ul li a .social-text {
+          margin-left: 10px;
+          opacity: 0;
+          transform: translateX(-15px);
+          transition: all 0.4s ease;
+          white-space: nowrap;
+          color: #03a2ff;
+          font-weight: 500;
+        }
+
+        .footer-column ul li a:hover .social-text {
+          opacity: 1;
+          transform: translateX(0);
+        }
+
+.payment-icons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+}
+
+  .payment-icons img {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+    filter: grayscale(100%);
+    transition: all 0.3s ease;
+  }
+
+    .payment-icons img:hover {
+      filter: grayscale(0%);
+      transform: scale(1.1);
+    }
+.footer {
+  background-color: #f8f9fa;
+  padding: 30px 0;
+  color: #333;
+}
+
+  .footer a {
+    color: #007bff;
+  }
+
+    .footer a:hover {
+      text-decoration: underline;
+    }
+/*.footer-columns {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  padding: 20px 0;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+  .footer-column h5 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+
+  .footer-column ul {
+    list-style: none;
+    padding: 0;
+  }
+
+    .footer-column ul li {
+      margin-bottom: 5px;
+    }
+
+      .footer-column ul li a {
+        text-decoration: none;
+        color: #007bff;
+      }
+
+        .footer-column ul li a:hover {
+          text-decoration: underline;
+        }
+
+.payment-icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  padding: 20px;
+}
+
+.payment-icon img {
+  width: 60px;*/ /* Adjust size as needed */
+  /*height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+  .payment-icon img:hover {
+    transform: scale(1.1);*/ /* Slight zoom effect on hover */
+  /*}*/
+
+/* styles.css or component css */

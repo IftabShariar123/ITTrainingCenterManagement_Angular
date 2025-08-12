@@ -1,0 +1,339 @@
+<!--<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Designation List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Designation</button>
+    </div>
+  </div>-->
+<!-- Items per page selector -->
+<!--<div class="row mt-3">
+  <div class="col-md-6">
+    <div class="input-group mb-3">
+      <label class="input-group-text" for="itemsPerPage">Items per page:</label>
+      <select class="form-select" id="itemsPerPage" (change)="onItemsPerPageChange($event)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+@if (paginatedDesignations && paginatedDesignations.length > 0) {
+<table class="table table-bordered table-striped mt-3">
+  <thead>
+    <tr>
+      <th>SL No</th>
+      <th>Designation Name</th>
+      <th>Job Roles</th>
+      <th>Status</th>
+      <th class="text-center">Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    @for (item of paginatedDesignations; track $index) {
+    <tr>
+      <td>{{ (currentPage - 1) * itemsPerPage + $index + 1 }}</td>
+      <td>{{ item.designationName }}</td>
+      <td>{{ item.jobRoles }}</td>
+      <td>
+        <span [class]="item.isActive ? 'badge bg-success' : 'badge bg-danger'">
+          {{ item.isActive ? 'Active' : 'Inactive' }}
+        </span>
+      </td>
+      <td class="text-center">
+        <button class="btn btn-info btn-sm me-1" (click)="viewDetails(item)">Details</button>||
+        <button class="btn btn-primary btn-sm" (click)="onEdit(item)">Edit</button>||
+        <button class="btn btn-danger btn-sm ms-2" (click)="onDelete(item)">Delete</button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>-->
+<!-- Pagination controls -->
+<!--<nav aria-label="Page navigation" *ngIf="totalPages > 1">
+    <ul class="pagination justify-content-center">
+      <li class="page-item" [class.disabled]="currentPage === 1">
+        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">Previous</a>
+      </li>
+
+      @for (page of pageNumbers; track page) {
+      <li class="page-item" [class.active]="page === currentPage">
+        <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+      </li>
+      }
+
+      <li class="page-item" [class.disabled]="currentPage === totalPages">
+        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">Next</a>
+      </li>
+    </ul>
+  </nav>
+  } @else {
+  <h5 class="text-center p-5">No Designations Found</h5>
+  }
+</div>-->
+<!-- Add/Edit Modal -->
+<!--<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">
+          {{ designationForm.value.designationId != 0 ? 'Update' : 'Add' }} Designation
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="designationForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Designation Name*</label>
+            <input type="text" formControlName="designationName" class="form-control" placeholder="Enter designation name"
+                   [class.is-invalid]="designationForm.get('designationName')?.invalid && designationForm.get('designationName')?.touched">
+            @if (designationForm.get('designationName')?.invalid && designationForm.get('designationName')?.touched) {
+            <div class="invalid-feedback">Designation name is required</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Job Roles</label>
+            <input type="text" formControlName="jobRoles" class="form-control" placeholder="Enter job roles">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remarks</label>
+            <input type="text" formControlName="remarks" class="form-control" placeholder="Remarks">
+          </div>
+
+          <div class="mb-3 form-check">
+            <input type="checkbox" formControlName="isActive" class="form-check-input" id="isActiveCheck">
+            <label class="form-check-label" for="isActiveCheck">Is Active</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" [disabled]="designationForm.invalid" class="btn btn-primary">
+            {{ designationForm.value.designationId != 0 ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>-->
+<!-- Details Modal -->
+<!--<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Designation Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Designation Name:</strong> {{ selectedDesignation?.designationName }}</p>
+        <p><strong>Job Roles:</strong> {{ selectedDesignation?.jobRoles }}</p>
+        <p><strong>Remarks:</strong> {{ selectedDesignation?.remarks }} </p>
+
+        <p>
+          <strong>Status:</strong>
+          <span [class]="selectedDesignation?.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ selectedDesignation?.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>-->
+
+
+
+
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center">
+    <div class="col-md-4">
+      <h3>Designation List</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Designation</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Search by dropdown -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="designationName">Designation Name</option>
+        <option value="jobRoles">Job Roles</option>
+        <!--<option value="isActive">Status</option>-->
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  @if (filteredList && filteredList.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('designationName')" class="sortable">
+          Designation Name
+          <span *ngIf="sortColumn === 'designationName'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('jobRoles')" class="sortable">
+          Job Roles
+          <span *ngIf="sortColumn === 'jobRoles'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('isActive')" class="sortable">
+          Status
+          <span *ngIf="sortColumn === 'isActive'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (designation of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ designation.designationName }}</td>
+        <td>{{ designation.jobRoles }}</td>
+        <td>
+          <span [class]="designation.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ designation.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info btn-sm" (click)="viewDetails(designation)">Details</button> ||
+          <button class="btn btn-primary btn-sm" (click)="onEdit(designation)">Edit</button> ||
+          <button class="btn btn-danger btn-sm" (click)="onDelete(designation)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Designations Found</h5>
+  }
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">
+          {{ designationForm.value.designationId != 0 ? 'Update' : 'Add' }} Designation
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="designationForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Designation Name*</label>
+            <input type="text" formControlName="designationName" class="form-control" placeholder="Enter designation name"
+                   [class.is-invalid]="designationForm.get('designationName')?.invalid && designationForm.get('designationName')?.touched">
+            @if (designationForm.get('designationName')?.invalid && designationForm.get('designationName')?.touched) {
+            <div class="invalid-feedback">Designation name is required</div>
+            }
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Job Roles</label>
+            <input type="text" formControlName="jobRoles" class="form-control" placeholder="Enter job roles">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remarks</label>
+            <input type="text" formControlName="remarks" class="form-control" placeholder="Remarks">
+          </div>
+
+          <div class="mb-3 form-check">
+            <input type="checkbox" formControlName="isActive" class="form-check-input" id="isActiveCheck">
+            <label class="form-check-label" for="isActiveCheck">Is Active</label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="submit" [disabled]="designationForm.invalid || isSubmitting" class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">{{ designationForm.value.designationId != 0 ? 'Updating...' : 'Saving...' }}</span>
+            } @else {
+            {{ designationForm.value.designationId != 0 ? 'Update' : 'Save' }}
+            }
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Designation Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body">
+        <p><strong>Designation Name:</strong> {{ selectedDesignation?.designationName }}</p>
+        <p><strong>Job Roles:</strong> {{ selectedDesignation?.jobRoles }}</p>
+        <p><strong>Remarks:</strong> {{ selectedDesignation?.remarks }} </p>
+        <p>
+          <strong>Status:</strong>
+          <span [class]="selectedDesignation?.isActive ? 'badge bg-success' : 'badge bg-danger'">
+            {{ selectedDesignation?.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+

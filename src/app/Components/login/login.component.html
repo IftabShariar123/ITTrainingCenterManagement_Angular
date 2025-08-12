@@ -1,0 +1,34 @@
+<div class="login-container">
+  <div class="login-card">
+    <h2>Login</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div class="form-group">
+        <input type="text" formControlName="username" placeholder="Username" />
+        <div *ngIf="loginForm.get('username')?.hasError('required')" class="error-text">
+          Username is required
+        </div>
+      </div>
+
+      <div class="form-group password-group">
+        <input [type]="showPassword ? 'text' : 'password'"
+               formControlName="password"
+               placeholder="Password" />
+        <span (click)="togglePasswordVisibility()" class="toggle-icon">
+          <i class="material-icons">{{ showPassword ? 'visibility_off' : 'visibility' }}</i>
+        </span>
+        <div *ngIf="loginForm.get('password')?.hasError('required')" class="error-text">
+          Password is required
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-text">{{ errorMessage }}</div>
+
+      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+
+      <div class="login-links">
+        <a [routerLink]="['/forgotpassword']">Forgot Password?</a>
+        <a [routerLink]="['/register']">Don't have an account? Register</a>
+      </div>
+    </form>
+  </div>
+</div>

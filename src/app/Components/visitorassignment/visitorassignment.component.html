@@ -1,0 +1,191 @@
+<h2>Visitor Assignment</h2>
+<div class="dropdown-container" style="position: relative;">
+  <label>Select Sales Executive:</label>
+  <!-- Search input that behaves like dropdown -->
+  <input type="text"
+         placeholder="Search executive..."
+         [(ngModel)]="unavailableEmpSearchText"
+         (focus)="showUnavailableDropdown = true"
+         (input)="filterUnavailableEmployees()"
+         class="form-control" />
+
+  <!-- Dropdown options -->
+  <ul *ngIf="showUnavailableDropdown && filteredUnavailableEmployees.length > 0"
+      class="dropdown-options"
+      style="position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0;">
+    <li *ngFor="let emp of filteredUnavailableEmployees"
+        (click)="selectUnavailableEmployee(emp)"
+        style="padding: 5px; cursor: pointer;"
+        (mouseenter)="hovered = emp.employeeId"
+        [style.background]="hovered === emp.employeeId ? '#f0f0f0' : 'white'">
+      {{ emp.employeeName }}
+    </li>
+  </ul>
+</div>
+
+<div *ngIf="visitorsUnderSelectedEmployee.length > 0" class="visitor-list-section">
+  <h3>Visitors under selected employee:</h3>
+
+  <!-- Search input field -->
+  <div class="search-container">
+    <input type="text"
+           [(ngModel)]="visitorSearchText"
+           (input)="filterVisitors()"
+           placeholder="Search by name or contact number"
+           class="search-input">
+  </div>
+
+  <!-- Select All checkbox -->
+  <div class="select-all-container">
+    <label for="selectAll">Select All</label>
+    <input type="checkbox"
+           id="selectAll"
+           [checked]="areAllVisibleVisitorsSelected()"
+           (change)="toggleSelectAll($event)">
+  </div>
+
+  <!-- Display filtered visitors -->
+  <div *ngFor="let visitor of filteredVisitors" class="visitor-item">
+    <input type="checkbox"
+           [checked]="selectedVisitorIds.includes(visitor.visitorId)"
+           (change)="toggleVisitorSelection(visitor.visitorId, $event)" />
+    {{ visitor.visitorName }} - {{ visitor.contactNo }}
+  </div>
+</div>
+
+
+<div class="form-section" style="position: relative;">
+  <label>Select Available Executive to Assign:</label>
+
+  <!-- Search input -->
+  <input type="text"
+         placeholder="Search available executive..."
+         [(ngModel)]="availableEmpSearchText"
+         (focus)="showAvailableDropdown = true"
+         (input)="filterAvailableEmployees()"
+         class="form-control"
+         [disabled]="!selectedUnavailableEmployeeId || selectedUnavailableEmployeeId === 0" />
+
+  <!-- Dropdown list -->
+  <ul *ngIf="showAvailableDropdown && filteredAvailableEmployees.length > 0"
+      class="dropdown-options"
+      style="position: absolute; z-index: 1000; background: white; border: 1px solid #ccc; width: 100%; max-height: 200px; overflow-y: auto; list-style: none; padding: 0; margin: 0;">
+    <li *ngFor="let emp of filteredAvailableEmployees"
+        (click)="selectAvailableEmployee(emp)"
+        style="padding: 5px; cursor: pointer;"
+        (mouseenter)="hoveredAvailable = emp.employeeId"
+        [style.background]="hoveredAvailable === emp.employeeId ? '#f0f0f0' : 'white'">
+      {{ emp.employeeName }}
+    </li>
+  </ul>
+
+  <!-- Message -->
+  <div *ngIf="!selectedUnavailableEmployeeId || selectedUnavailableEmployeeId === 0" class="hint-text" style="color:red">
+    Please select a sales executive first
+  </div>
+</div>
+
+
+
+<div class="form-section">
+  <label for="transferDate">Transfer Date:</label>
+  <input type="datetime-local" id="transferDate"
+         [ngModel]="newAssignment.transferDate | date:'yyyy-MM-ddTHH:mm'"
+         (ngModelChange)="newAssignment.transferDate = $event"
+         name="transferDate" readonly>
+</div>
+
+<div class="form-section">
+  <label for="notes">Notes:</label>
+  <textarea id="notes" [(ngModel)]="newAssignment.notes"></textarea>
+</div>
+
+
+<div class="form-section">
+  <label for="userName">User Name <span class="required">*</span>:</label>
+  <input type="text" id="userName"
+         [(ngModel)]="newAssignment.userName"
+         name="userName"
+         required
+         #userNameInput="ngModel">
+
+  <div *ngIf="userNameInput.invalid && (userNameInput.dirty || userNameInput.touched)"
+       class="validation-error">
+    <div *ngIf="userNameInput.errors?.['required']">
+      Name is required to assign visitors
+    </div>
+  </div>
+</div>
+<br>
+<br>
+<button (click)="assignVisitors()"
+        [disabled]="isLoading || !isFormValid()"
+        class="assign-button">
+  Assign Selected Visitors
+</button>
+<br>
+<br>
+<br>
+<hr>
+<h2 style="text-align:center"><u>Records</u></h2>
+<div class="form-section">
+  <p><b>Search Visitor:</b></p>
+  <input type="text"
+         [(ngModel)]="visitorSearchTerm"
+         (input)="searchVisitors()"
+         placeholder="Start typing to search visitors..."
+         class="search-input">
+
+  <div class="search-results" *ngIf="visitorSearchTerm && visitorsFromSearch.length > 0">
+    <div *ngFor="let visitor of visitorsFromSearch"
+         class="result-item"
+         (click)="selectVisitor(visitor)">
+      {{ visitor.visitorName }} - {{ visitor.contactNo }}
+    </div>
+  </div>
+</div>
+<div *ngIf="selectedVisitorDetails" class="visitor-details">
+  <h3>Visitor Details</h3>
+  <div class="detail-row">
+    <span class="detail-label">Name:</span>
+    <span>{{ selectedVisitorDetails.visitorName }}</span>
+  </div>
+  <div class="detail-row">
+    <span class="detail-label">Contact:</span>
+    <span>{{ selectedVisitorDetails.contactNo }}</span>
+  </div>
+
+  <div class="detail-row">
+    <span class="detail-label">Current Employee:</span>
+    <span>
+      {{ selectedVisitorDetails.currentEmployee?.employeeName || 'Not assigned' }}
+    </span>
+  </div>
+
+  <h4>Assignment History</h4>
+  <div *ngIf="selectedVisitorDetails.assignmentHistory.length > 0; else noHistory">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Employee</th>
+          <th>Notes</th>
+          <th>Assigned By</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of selectedVisitorDetails.assignmentHistory">
+          <td>{{ item.transferDate | date:'medium' }}</td>
+          <td>{{ item.employeeName }}</td>
+          <td>{{ item.notes || '-' }}</td>
+          <td>{{ item.userName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <ng-template #noHistory>
+    <p>No assignment history found for this visitor</p>
+  </ng-template>
+</div>
+
+

@@ -1,0 +1,360 @@
+
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center">
+    <div class="col-md-4">
+      <h3>Admission Management</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openAddModal()">
+        <i class="bi bi-plus-circle"></i> Add Admission
+      </button>
+    </div>
+  </div>
+
+  <!-- Pagination and Search Controls -->
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Search by dropdown -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;" (change)="applyFilter()">
+        <option value="admissionNo">Admission No</option>
+        <option value="visitorId">Visitor</option>
+        <!--<option value="remarks">Remarks</option>-->
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  <!-- Admissions List Table -->
+  @if (filteredAdmissions && filteredAdmissions.length > 0) {
+  <div class="table-responsive">
+    <table class="table table-bordered table-striped">
+      <thead>
+        <tr>
+          <th>SL No</th>
+          <th (click)="sort('admissionNo')" class="sortable">
+            Admission No
+            <span *ngIf="sortColumn === 'admissionNo'">
+              {{ sortDirection === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="sort('visitorId')" class="sortable">
+            Visitor
+            <span *ngIf="sortColumn === 'visitorId'">
+              {{ sortDirection === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th (click)="sort('admissionDate')" class="sortable">
+            Date
+            <span *ngIf="sortColumn === 'admissionDate'">
+              {{ sortDirection === 'asc' ? '↑' : '↓' }}
+            </span>
+          </th>
+          <th>Total Registrations</th>
+          <th>Discount</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (admission of filteredAdmissions | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+        <tr>
+          <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+          <td>{{ admission.admissionNo }}</td>
+          <td>{{ getVisitorName(admission.visitorId) }}</td>
+          <td>{{ admission.admissionDate | date:'mediumDate' }}</td>
+          <td>{{ admission.admissionDetails.length }}</td>
+          <td>{{ admission.discountAmount | currency }}</td>
+          <td class="text-center">
+            <button class="btn btn-info btn-sm" (click)="onDetails(admission)">
+              <i class="bi bi-eye"></i> Details
+            </button>
+            <button class="btn btn-primary btn-sm mx-1" (click)="onEdit(admission)">
+              <i class="bi bi-pencil"></i> Edit
+            </button>
+            <button class="btn btn-danger btn-sm" (click)="onDelete(admission)">
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Admissions Found</h5>
+  }
+</div>
+
+<!-- Add/Edit Admission Modal -->
+<div class="modal" id="admissionModal" #admissionModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        @if(admissionForm.value.admissionId != 0) {
+        <h4 class="modal-title">Edit Admission</h4>
+        } @else {
+        <h4 class="modal-title">Add Admission</h4>
+        }
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="admissionForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="admissionId">
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Visitor *</label>
+              <select class="form-control" formControlName="visitorId"
+                      (change)="onVisitorChange(admissionForm.value.visitorId)">
+                <option value="">Select Visitor</option>
+                @for (visitor of visitors; track visitor.visitorId) {
+                <option [value]="visitor.visitorId">
+                  {{ visitor.visitorName }} ({{ visitor.visitorType }})
+                </option>
+                }
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Admission Date *</label>
+              <input type="date" class="form-control" formControlName="admissionDate">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6" *ngIf="showOrganizationField">
+              <label class="form-label">Organization Name *</label>
+              <input type="text" class="form-control" formControlName="organizationName">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Remarks *</label>
+              <input type="text" class="form-control" formControlName="remarks">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Offer</label>
+              <select class="form-control" formControlName="offerId"
+                      (change)="onOfferChange(admissionForm.value.offerId)">
+                <option value="">Select Offer</option>
+                @for (offer of offers; track offer.offerId) {
+                <option [value]="offer.offerId">
+                  {{ offer.offerName }} ({{ offer.discountPercentage }}%)
+                </option>
+                }
+              </select>
+            </div>
+            <div class="col-md-3">
+              <label class="form-label">Discount Amount</label>
+              <input type="number" class="form-control" formControlName="discountAmount" min="0">
+            </div>
+          </div>
+
+          <!-- Available Registrations Section -->
+          <div class="card mb-3" *ngIf="visitorRegistrations.length > 0">
+            <div class="card-header bg-secondary text-white">
+              <h5>Available Registrations</h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Registration No</th>
+                      <th>Trainee Name</th>
+                      <th>Course/Combo</th>
+                      <th class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (reg of visitorRegistrations; track reg.registrationId) {
+                    <tr>
+                      <td>{{ reg.registrationNo }}</td>
+                      <td>{{ reg.traineeName }}</td>
+                      <td>{{ reg.course?.courseName || reg.courseCombo?.comboName }}</td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-primary btn-sm"
+                                (click)="addRegistrationDetail(reg)">
+                          <i class="bi bi-plus-circle"></i> Add
+                        </button>
+                      </td>
+                    </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admission Details Section -->
+          <div class="card">
+            <div class="card-header bg-info text-white">
+              <h5>Admission Details</h5>
+            </div>
+            <div class="card-body">
+              @if (admissionDetails.controls.length > 0) {
+              <div class="table-responsive">
+                <table class="table table-bordered" formArrayName="admissionDetails">
+                  <thead>
+                    <tr>
+                      <th>Registration No</th>
+                      <th>Trainee Name</th>
+                      <th>Batch *</th>
+                      <th class="text-center">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (detail of admissionDetails.controls; let i = $index; track i) {
+                    <tr [formGroupName]="i">
+                      <td>
+                        {{ detail.get('registrationNo')?.value }}
+                        <input type="hidden" formControlName="registrationId">
+                      </td>
+                      <td>{{ detail.get('traineeName')?.value }}</td>
+                      <td>
+                        <select class="form-control" formControlName="batchId">
+                          <option value="">Select Batch</option>
+                          @for (batch of batches; track batch.batchId) {
+                          <option [value]="batch.batchId">
+                            {{ batch.batchName }} ({{ batch.startDate | date:'shortDate' }})
+                          </option>
+                          }
+                        </select>
+                      </td>
+                      <td class="text-center">
+                        <button type="button" class="btn btn-danger btn-sm"
+                                (click)="removeDetail(i)">
+                          <i class="bi bi-trash"></i> Remove
+                        </button>
+                      </td>
+                    </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              } @else {
+              <div class="alert alert-info">
+                No admission details added yet. Select a visitor and add registrations.
+              </div>
+              }
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          @if (admissionForm.value.admissionId == 0) {
+          <button type="submit" [disabled]="!admissionForm.valid" class="btn btn-primary">
+            <i class="bi bi-save"></i> Save
+          </button>
+          } @else {
+          <button type="submit" [disabled]="!admissionForm.valid" class="btn btn-success">
+            <i class="bi bi-check-circle"></i> Update
+          </button>
+          }
+          <button type="button" class="btn btn-danger" (click)="closeModal()">
+            <i class="bi bi-x-circle"></i> Close
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">Admission Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedAdmission">
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <p><strong>Admission No:</strong> {{ selectedAdmission.admissionNo }}</p>
+          </div>
+          <div class="col-md-4">
+            <p><strong>Visitor:</strong> {{ getVisitorName(selectedAdmission.visitorId) }}</p>
+          </div>
+          <div class="col-md-4">
+            <p><strong>Date:</strong> {{ selectedAdmission.admissionDate | date:'longDate' }}</p>
+          </div>
+          <div class="col-md-4">
+            <p><strong>Remarks:</strong> {{ selectedAdmission.remarks }}</p>
+          </div>
+        </div>
+
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <p><strong>Organization:</strong> {{ selectedAdmission.organizationName || 'N/A' }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Discount:</strong> {{ selectedAdmission.discountAmount | currency }}</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header bg-info text-white">
+            <h5>Registration Details</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered">
+                <thead class="table-info">
+                  <tr>
+                    <th>SL No</th>
+                    <th>Registration No</th>
+                    <th>Trainee</th>
+                    <th>Batch</th>
+                    <th>Course/Combo</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (detail of selectedAdmission.admissionDetails; let i = $index; track i) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ getRegistrationNo(detail.registrationId) }}</td>
+                    <td>{{ getTraineeName(detail.registrationId) }}</td>
+                    <td>{{ getBatchName(detail.batchId) }}</td>
+                    <td>{{ getCourseName(detail.registrationId) }}</td>
+                  </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeDetailsModal()">
+          <i class="bi bi-x-circle"></i> Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

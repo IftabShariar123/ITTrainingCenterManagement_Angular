@@ -1,0 +1,99 @@
+.box {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: #1f1f1f;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login {
+  position: relative;
+  width: 400px;
+  background: #2e2e2e;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.2);
+}
+
+.loginBx h2 {
+  color: #45f3ff;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.loginBx input[type="text"],
+.loginBx input[type="email"],
+.loginBx input[type="password"] {
+  width: 100%;
+  padding: 10px 15px;
+  margin: 8px 0;
+  background: #111;
+  border: 1px solid #45f3ff;
+  color: #fff;
+  border-radius: 5px;
+}
+
+.loginBx input[type="submit"] {
+  width: 100%;
+  padding: 10px;
+  background: #45f3ff;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+  .loginBx input[type="submit"]:disabled {
+    background: #888;
+    cursor: not-allowed;
+  }
+
+.group {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+ 
+}
+
+  .group a {
+    color: #45f3ff;
+    text-decoration: none;
+    font-size: 0.9em;
+    cursor: pointer;
+    text-decoration: underline;
+  }
+
+.error {
+  color: #ff2770;
+  font-size: 0.8em;
+  margin-top: -5px;
+  margin-bottom: 5px;
+}
+
+.success {
+  color: #45f3ff;
+  font-size: 0.9em;
+  margin-top: 10px;
+}
+.password-wrapper {
+  position: relative;
+}
+
+  .password-wrapper input {
+    width: 100%;
+    padding-right: 40px;
+  }
+
+.toggle-icon {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 1.1em;
+  color: #888;
+}

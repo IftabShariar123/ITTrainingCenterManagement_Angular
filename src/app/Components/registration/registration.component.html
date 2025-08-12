@@ -1,0 +1,459 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Registration List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Registration</button>
+    </div>
+  </div>
+ <!--Items per page selector--> 
+<div class="row mt-3">
+  <div class="col-md-6">
+    <div class="input-group mb-3">
+      <label class="input-group-text" for="itemsPerPage">Items per page:</label>
+      <select class="form-select" id="itemsPerPage" (change)="onItemsPerPageChange($event)">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<ng-container *ngIf="paginatedRegistrations && paginatedRegistrations.length > 0; else noRegistrations">
+  <table class="table table-bordered table-striped mt-3">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th>Reg. No</th>
+        <th>Trainee Name</th>
+        <th>Contact</th>
+        <th>Registration Fee</th>
+        <th>Reg. Date</th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of paginatedRegistrations; let i = index">
+        <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+        <td>{{ item.registrationNo }}</td>
+        <td>{{ item.traineeName }}</td>
+        <td>{{ item.contactNo }}</td>
+        <!--<td>{{ item.registrationFee }}</td>-->
+        <td>{{ item.registrationDate | date }}</td>
+        <td class="text-center">
+          <button class="btn btn-info btn-sm me-1" (click)="onDetails(item)">Details</button>||
+          <button class="btn btn-primary btn-sm" (click)="onEdit(item)">Edit</button>||
+          <button class="btn btn-danger btn-sm ms-2" (click)="onDelete(item)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+ <!--Pagination controls--> 
+<nav aria-label="Page navigation" *ngIf="totalPages > 1">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+
+        <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+
+  <ng-template #noRegistrations>
+    <h5 class="text-center p-5">No Registrations Found</h5>
+  </ng-template>
+</div>
+ <!--Modal--> 
+<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+ <!--Modal Header--> 
+<div class="modal-header bg-info">
+  <h4 class="modal-title">
+    {{ registrationForm.value.registrationId != 0 ? 'Update' : 'Add' }} Registration
+  </h4>
+  <button type="button" class="btn-close" (click)="closeModal()"></button>
+</div>
+ <!--Modal Form--> 
+<form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+  <div class="modal-body">
+    <div class="row">
+ <!--Personal Information Column--> 
+<div class="col-md-6">
+  <h5>Registration Information</h5>
+  <div class="mb-3">
+    <label class="form-label">Visitor*</label>
+    <select formControlName="visitorId" class="form-select"
+            [class.is-invalid]="registrationForm.get('visitorId')?.invalid && registrationForm.get('visitorId')?.touched"
+            (change)="onVisitorSelected()">
+      <option value="">Select Visitor</option>
+      <option *ngFor="let visitor of visitors" [value]="visitor.visitorId">
+        {{ visitor.visitorName }}({{visitor.visitorType}}) - {{visitor.contactNo}}
+<ng-container *ngIf="visitor.employee">({{ visitor.employee.employeeName }})</ng-container>
+</option>
+    </select>
+    <div class="invalid-feedback">Visitor is required</div>
+  </div>
+  <div class="mb-3">
+    <label class="form-label">Reference (Executive Name)*</label>
+    <input type="text" formControlName="reference" class="form-control"
+           [class.is-invalid]="registrationForm.get('reference')?.invalid && registrationForm.get('reference')?.touched"
+           [readonly]="!!registrationForm.get('visitorId')?.value">
+    <div class="invalid-feedback">Reference is required</div>
+  </div>
+
+
+  <div class="mb-3">
+    <label class="form-label">Trainee Name*</label>
+    <input type="text" formControlName="traineeName" class="form-control"
+           [class.is-invalid]="registrationForm.get('traineeName')?.invalid && registrationForm.get('traineeName')?.touched">
+    <div class="invalid-feedback">Trainee name is required</div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Registration Date*</label>
+    <input type="date" formControlName="registrationDate" class="form-control"
+           [class.is-invalid]="registrationForm.get('registrationDate')?.invalid && registrationForm.get('registrationDate')?.touched">
+    <div class="invalid-feedback">Registration date is required</div>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Course</label>
+    <select formControlName="courseId" class="form-select">
+      <option value="">Select Course</option>
+      <option *ngFor="let course of courses" [value]="course.courseId">{{ course.courseName }}</option>
+    </select>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Course Combo</label>
+    <select formControlName="courseComboId" class="form-select">
+      <option value="">Select Course Combo</option>
+      <option *ngFor="let combo of courseCombos" [value]="combo.courseComboId">{{ combo.comboName }}</option>
+    </select>
+  </div>
+</div>
+ <!--Additional Information Column--> 
+<div class="col-md-6">
+
+
+<h5 class="mt-4">Personal Details</h5>
+
+
+<div class="mb-3">
+  <label class="form-label">Gender*</label>
+  <div class="form-control" [class.is-invalid]="registrationForm.get('gender')?.invalid && registrationForm.get('gender')?.touched">
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" formControlName="gender" id="male" value="Male">
+      <label class="form-check-label" for="male">Male</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" formControlName="gender" id="female" value="Female">
+      <label class="form-check-label" for="female">Female</label>
+    </div>
+    <div class="form-check form-check-inline">
+      <input class="form-check-input" type="radio" formControlName="gender" id="other" value="Other">
+      <label class="form-check-label" for="other">Other</label>
+    </div>
+  </div>
+  <div class="invalid-feedback">Gender is required</div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">Date of Birth</label>
+  <input type="date" formControlName="dateOfBirth" class="form-control">
+</div>
+
+<div class="mb-3">
+  <label class="form-label">Original Date of Birth</label>
+  <input type="date" formControlName="originatDateofBirth" class="form-control">
+</div>
+
+<div class="mb-3">
+  <label class="form-label">Contact No*</label>
+  <input type="text" formControlName="contactNo" class="form-control"
+         [class.is-invalid]="registrationForm.get('contactNo')?.invalid && registrationForm.get('contactNo')?.touched">
+  <div class="invalid-feedback">Contact number is required</div>
+</div>
+<div class="mb-3">
+  <label class="form-label">Emergency Contact No*</label>
+  <input type="text" formControlName="emergencyContactNo" class="form-control"
+         [class.is-invalid]="registrationForm.get('emergencyContactNo')?.invalid && registrationForm.get('emergencyContactNo')?.touched">
+<div class="invalid-feedback">Contact number is required</div>
+</div>
+  </div>
+</div>
+
+<div class="row">
+
+  <div class="col-md-6">
+    <h5>Family Information</h5>
+    <div class="mb-3">
+      <label class="form-label">Father's Name</label>
+      <input type="text" formControlName="fatherName" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Mother's Name</label>
+      <input type="text" formControlName="motherName" class="form-control">
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Marital Status</label>
+      <select formControlName="maritalStatus" class="form-select">
+        <option value="">Select Marital Status</option>
+        <option value="Married">Married</option>
+        <option value="Single">Unmarried</option>
+<option value="Divorced">Divorced</option>
+<option value="Widowed">Widowed</option>
+</select>
+  </div>
+</div>
+ <!--Address Information--> 
+<div class="col-md-6">
+  <h5>Address Information</h5>
+  <div class="mb-3">
+    <label class="form-label">Present Address</label>
+    <textarea formControlName="presentAddress" class="form-control" rows="3"></textarea>
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Permanent Address</label>
+    <textarea formControlName="permanentAddress" class="form-control" rows="3"></textarea>
+  </div>
+</div>
+
+<div class="col-md-6">
+  <h5>Additional Information</h5>
+  <div class="mb-3">
+    <label class="form-label">Email</label>
+    <input type="email" formControlName="emailAddress" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Blood Group</label>
+    <input type="text" formControlName="bloodGroup" class="form-control" placeholder="Enter blood group (e.g., A+, B-, AB+)">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Highest Education</label>
+    <input type="text" formControlName="highestEducation" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Institution Name</label>
+    <input type="text" formControlName="institutionName" class="form-control">
+  </div>
+
+  <div class="mb-3">
+    <label class="form-label">Nationality</label>
+    <input type="text" formControlName="nationality" class="form-control">
+  </div>
+
+
+  <div class="mb-3">
+    <label class="form-label">Religion*</label>
+    <select formControlName="religion"
+            class="form-select"
+            [class.is-invalid]="registrationForm.get('religion')?.invalid && registrationForm.get('religion')?.touched">
+      <option value="">Select Religion</option>
+      <option value="Islam">Islam</option>
+      <option value="Hindu">Hindu</option>
+      <option value="Christian">Christian</option>
+      <option value="Buddhist">Buddhist</option>
+      <option value="Other">Other</option>
+  <!--Optional--> 
+</select>
+  <div class="invalid-feedback">Please select a religion</div>
+</div>
+
+<div class="mb-3">
+  <label class="form-label">NID/Birth Certificate No</label>
+  <input type="text" formControlName="birthOrNIDNo" class="form-control">
+</div>
+<div class="mb-3">
+  <label class="form-label">Reference (Executive Name)*</label>
+  <input type="text" formControlName="reference" class="form-control"
+         [class.is-invalid]="registrationForm.get('reference')?.invalid && registrationForm.get('reference')?.touched"
+         [readonly]="!!registrationForm.get('visitorId')?.value">
+  <div class="invalid-feedback">Reference is required</div>
+</div>
+</div>
+</div>
+
+<div class="row">
+ <!--File Uploads--> 
+<div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Profile Image</label>
+        <input type="file" class="form-control" #fileInput (change)="onFileChange($event, 'image')" accept="image/*">
+        <div class="mt-2" *ngIf="imagePreview">
+          <img [src]="imagePreview" alt="Preview" class="img-thumbnail" style="max-height: 150px;">
+          <div class="form-text">Leave empty to keep existing image</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="mb-3">
+        <label class="form-label">Document</label>
+        <input type="file" class="form-control" #docInput (change)="onFileChange($event, 'document')">
+        <div class="mt-2" *ngIf="docPreview">
+          <span class="badge bg-info">{{ docPreview }}</span>
+          <div class="form-text">Leave empty to keep existing document</div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Remarks</label>
+      <textarea type="text" formControlName="remarks" class="form-control" placeholder="Remarks"></textarea>
+    </div>
+  </div>
+</div>
+ <!--Modal Footer--> 
+<div class="modal-footer">
+          <button type="submit" [disabled]="registrationForm.invalid" class="btn btn-primary">
+            {{ registrationForm.value.registrationId != 0 ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Registration Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedRegistration">
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <img [src]="selectedRegistration.imagePath ? (environment.apiBaseUrl + '/' + selectedRegistration.imagePath) : 'assets/images/default-user.png'"
+                 alt="Trainee Photo" class="img-thumbnail mb-3" style="max-height: 200px;">
+            <h5>Name: {{ selectedRegistration.traineeName }}</h5>
+            <p class="text-muted">Registration No: {{ selectedRegistration.registrationNo }}</p>
+          </div>
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Basic Information</h6>
+                <p>
+                  <strong>Visitor:</strong>
+                  <span *ngIf="selectedRegistration.visitor?.visitorName; else loadingVisitor">
+                    {{ selectedRegistration.visitor?.visitorName }}
+                    <span *ngIf="selectedRegistration.visitor?.employeeName">
+                      ({{ selectedRegistration.visitor?.employeeName }})
+                    </span>
+                  </span>
+                  <ng-template #loadingVisitor>
+                    <span *ngIf="selectedRegistration.visitorId; else noVisitor">
+                      <i class="fas fa-spinner fa-spin"></i> Loading visitor...
+                    </span>
+                    <ng-template #noVisitor>
+                      Not specified
+                    </ng-template>
+                  </ng-template>
+                </p>
+                <p><strong>Registration Date:</strong> {{ selectedRegistration.registrationDate | date }}</p>
+                <p><strong>Course:</strong> {{ selectedRegistration.course?.courseName || 'None'  }}</p>
+
+                <p><strong>Course Combo:</strong> {{ selectedRegistration.courseCombo?.comboName || 'None'  }}</p>
+                <!--<p><strong>Registration Fee:</strong> {{ selectedRegistration.registrationFee }}</p>-->
+                <p><strong>Gender:</strong> {{ selectedRegistration.gender }}</p>
+                <p><strong>Date of Birth:</strong> {{ selectedRegistration.dateOfBirth | date }}</p>
+                <p><strong>Original DOB:</strong> {{ selectedRegistration.originatDateofBirth | date }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Contact Information</h6>
+                <p><strong>Contact No:</strong> {{ selectedRegistration.contactNo }}</p>
+                <p><strong>Emergency Contact No:</strong> {{ selectedRegistration.emergencyContactNo }}</p>
+
+                <p><strong>Email:</strong> {{ selectedRegistration.emailAddress || '-' }}</p>
+                <p><strong>Nationality:</strong> {{ selectedRegistration.nationality || '-' }}</p>
+                <p><strong>Religion:</strong> {{ selectedRegistration.religion || '-' }}</p>
+                <p><strong>Marital Status:</strong> {{ selectedRegistration.maritalStatus || '-' }}</p>
+                <p><strong>Blood Group:</strong> {{ selectedRegistration.bloodGroup || '-' }}</p>
+                <p><strong>Birth/NID No:</strong> {{ selectedRegistration.birthOrNIDNo || '-' }}</p>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Family Information</h6>
+                <p><strong>Father's Name:</strong> {{ selectedRegistration.fatherName || '-' }}</p>
+                <p><strong>Mother's Name:</strong> {{ selectedRegistration.motherName || '-' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Education Information</h6>
+                <p><strong>Highest Education:</strong> {{ selectedRegistration.highestEducation || '-' }}</p>
+                <p><strong>Institution Name:</strong> {{ selectedRegistration.institutionName || '-' }}</p>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Present Address</h6>
+                <p>{{ selectedRegistration.presentAddress || '-' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Permanent Address</h6>
+                <p>{{ selectedRegistration.permanentAddress || '-' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Remarks:</h6>
+                <p>{{ selectedRegistration.remarks }}</p>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Reference</h6>
+                <p>{{ selectedRegistration.reference || '-' }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Documents</h6>
+                <div *ngIf="selectedRegistration.documentPath; else noDocument">
+                  <a [href]="getDocumentUrl(selectedRegistration.documentPath)"
+                     target="_blank"
+                     class="btn btn-sm btn-info">
+                    <i class="fas fa-file"></i> View Document
+                  </a>
+                </div>
+                <ng-template #noDocument>
+                  <span class="text-muted">No document available</span>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+

@@ -1,0 +1,176 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Certificate List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()"> Issue Certificate</button>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col-6">
+      <label for="pageSize" class="form-label">Records Per Page:</label>
+      <select id="pageSize" class="form-select w-auto d-inline-block" [(ngModel)]="itemsPerPage" (change)="p=1">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+      </select>
+    </div>
+  </div>
+
+  <table *ngIf="filteredList.length > 0" class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th style="width:50px">Sl No</th>
+        <th>Certificate Number</th>
+        <th>Trainee Name</th>
+        <th>Batch Name</th>
+        <th>Issue Date</th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+        <td>{{ i + 1 + (p - 1) * itemsPerPage }}</td>
+        <td>{{ item.certificateNumber || 'N/A' }}</td>
+        <td>{{ item.traineeName }}</td>
+        <td>{{ item.batchName }}</td>
+        <td>{{ item.issueDate | date:'mediumDate' }}</td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onDetails(item)" style="height:35px; width:75px;">Details</button>
+          <button class="btn btn-primary" (click)="onEdit(item)" style="height:35px; width:75px;">Edit</button>
+          <button class="btn btn-danger" (click)="onDelete(item)" style="height:35px; width:75px;">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="p = $event" class="mt-3"></pagination-controls>
+
+  <div *ngIf="filteredList.length === 0" class="text-center p-5">
+    <h5>No Certificate Found</h5>
+  </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">{{ certificateForm.value.certificateId !== 0 ? 'Update Certificate' : 'Issue Certificate' }}</h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+      <form [formGroup]="certificateForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="row gy-2">
+            <!--<div class="col-md-4">
+    <label>Trainee *</label>
+    <select formControlName="traineeId" class="form-select">
+      <option value="">Select Trainee</option>
+      <option *ngFor="let trainee of traineeDropdown" [value]="trainee.traineeId">
+        {{ trainee.traineeIDNo }} - {{ trainee.traineeName }}
+      </option>
+    </select>
+  </div>-->
+            <!-- Replace the existing trainee dropdown with this: -->
+            <div class="col-md-4">
+              <mat-form-field appearance="outline">
+                <mat-label>Search Trainee</mat-label>
+                <input type="text"
+                       matInput
+                       [matAutocomplete]="autoTrainee"
+                       [formControl]="traineeSearchControl"
+                       placeholder="Type to search">
+                <mat-autocomplete #autoTrainee="matAutocomplete"
+                                  [displayWith]="displayTraineeFn"
+                                  (optionSelected)="onTraineeSelected($event.option.value)">
+                  <mat-option *ngFor="let trainee of filteredTrainees" [value]="trainee">
+                    {{ displayTraineeFn(trainee) }}
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+            </div>
+
+            <!-- Registration No -->
+            <div class="col-md-4">
+              <label>Registration No *</label>
+              <input type="text" class="form-control" [value]="selectedTraineeDetails?.registrationNo" readonly />
+            </div>
+
+            <!-- Batch Name -->
+            <div class="col-md-4">
+              <label>Batch Name *</label>
+              <input type="text" class="form-control" [value]="selectedTraineeDetails?.batchName" readonly />
+            </div>
+
+            <!-- Course Name -->
+            <div class="col-md-4">
+              <label>Course Name *</label>
+              <input type="text" class="form-control" [value]="selectedTraineeDetails?.courseName" readonly />
+            </div>
+
+            <!-- Recommendation Status -->
+            <div class="col-md-4">
+              <label>Recommendation Status *</label>
+              <input type="text" class="form-control" [value]="selectedTraineeDetails?.recommendationStatus" readonly />
+            </div>
+
+            <div class="col-md-4">
+              <label>Issue Date *</label>
+              <input type="date" formControlName="issueDate" class="form-control" />
+            </div>
+
+            <!--<div class="col-md-6">
+    <label>Certificate Number</label>
+    <input type="text" formControlName="certificateNumber" maxlength="100" class="form-control" />
+  </div>-->
+
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit"
+                  [disabled]="certificateForm.invalid || isSubmitting"
+                  [ngClass]="{
+              'btn-primary': certificateForm.value.certificateId === 0,
+              'btn-success': certificateForm.value.certificateId !== 0
+            }"
+                  class="btn">
+            {{ certificateForm.value.certificateId === 0 ? 'Issue' : 'Update' }}
+          </button>
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Certificate Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+
+      <div class="modal-body" *ngIf="selectedCertificate">
+        <p><strong>Trainee:</strong> {{ selectedCertificate?.traineeName || 'N/A' }}</p>
+        <p><strong>Registration No:</strong> {{ selectedCertificate?.registrationNo || 'N/A' }}</p>
+        <p><strong>Batch Name:</strong> {{ selectedCertificate?.batchName || 'N/A' }}</p>
+        <p><strong>Course Name:</strong> {{ selectedCertificate?.courseName || 'N/A' }}</p>
+        <p><strong>Recommendation Status:</strong> {{ selectedCertificate?.recommendationStatus || 'N/A' }}</p>
+        <p><strong>Issue Date:</strong> {{ selectedCertificate?.issueDate | date:'mediumDate' }}</p>
+        <p><strong>Certificate Number:</strong> {{ selectedCertificate?.certificateNumber || 'N/A' }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+

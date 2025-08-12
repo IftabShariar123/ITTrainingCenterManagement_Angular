@@ -1,0 +1,117 @@
+<header>
+  <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 fixed-top custom-navbar">
+    <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/">
+        <svg id="animated-logo" xmlns="http://www.w3.org/2000/svg" width="150" height="40" viewBox="0 0 180 40">
+          <rect width="180" height="40" rx="5" fill="white" />
+
+          <rect id="cpu-body" x="10" y="5" width="30" height="30" rx="3" fill="#4A90E2" stroke="#2D3748" stroke-width="1.5" />
+          <rect id="cpu-core" x="15" y="10" width="20" height="20" rx="2" fill="#00FF9D" opacity="0.8">
+            <animate attributeName="opacity" values="0.8;0.4;0.8" dur="2s" repeatCount="indefinite" />
+          </rect>
+
+          <path id="signal-wave" fill="none" stroke="#353cff" stroke-width="3" stroke-linecap="round"
+                d="M50 20 Q60 10 70 20 T90 20 T110 20 T130 20">
+            <animate attributeName="d" values="M50 20 Q60 10 70 20 T90 20 T110 20 T130 20;
+                                        M50 20 Q60 5 70 20 T90 35 T110 5 T130 20;
+                                        M50 20 Q60 10 70 20 T90 20 T110 20 T130 20"
+                     dur="3s" repeatCount="indefinite" />
+          </path>
+
+          <text x="50" y="30" font-family="Arial, sans-serif" font-weight="bold" font-size="16" fill="#2D3748">TRAINING</text>
+          <text x="130" y="30" font-family="Arial, sans-serif" font-size="12" fill="#353cff">CENTER</text>
+        </svg>
+      </a>
+
+      <div class="dropdown ms-auto">
+        <button class="btn" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+          <i class="fas fa-bars"></i>
+          <!-- লগইন করা থাকলে ইউজারনেম দেখাবে -->
+          <span *ngIf="isAuthenticated" class="ms-2">{{username}}</span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+          <li *ngIf="!isAuthenticated"><a class="dropdown-item" routerLink="/login">Sign In</a></li>
+          <li *ngIf="!isAuthenticated"><a class="dropdown-item" routerLink="/register">Sign Up</a></li>
+
+          <ng-container *ngIf="isAuthenticated">
+            <li><strong><div class="dropdown-header" style="color:lightskyblue; font-size:20px">Welcome, {{username}}</div></strong></li>
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" routerLink="/dashboard"> Dashboard</a></li>
+
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item btn btn-link" (click)="logout()">Logout</a>
+            </li>
+          </ng-container>
+
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" routerLink="/"> Back To Home</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<div class="container" style="margin-top: 80px;">
+  <main role="main" class="pb-3">
+    <router-outlet></router-outlet>
+
+  </main>
+</div>
+
+<footer class="border-top footer text-muted">
+  <div class="container">
+    <div class="footer-columns">
+
+      <!-- Company Column -->
+      <div class="footer-column">
+        <h5>Company</h5>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Career</a></li>
+          <li><a href="#">Why Our Courses</a></li>
+          <li><a href="#">News</a></li>
+        </ul>
+      </div>
+
+      <!-- Policies Column -->
+      <div class="footer-column">
+        <h5>Policies</h5>
+        <ul>
+          <li><a href="#">Privacy Policy</a></li>
+          <li><a href="#">Terms of Service</a></li>
+          <li><a href="#">Refund Policy</a></li>
+        </ul>
+      </div>
+
+      <!-- Social Column -->
+      <div class="footer-column">
+        <h5>Social</h5>
+        <ul>
+          <li><a href="#"><i class="fab fa-facebook-f"></i><span class="social-text">Facebook</span></a></li>
+          <li><a href="#"><i class="fab fa-twitter"></i><span class="social-text">Twitter</span></a></li>
+          <li><a href="#"><i class="fab fa-instagram"></i><span class="social-text">Instagram</span></a></li>
+          <li><a href="#"><i class="fab fa-linkedin-in"></i><span class="social-text">LinkedIn</span></a></li>
+        </ul>
+      </div>
+
+    </div>
+
+    <h3>Payment Method:</h3>
+    <div class="payment-icons">
+      <img src="assets/payment/bkash.png" alt="bKash">
+      <img src="assets/payment/nagad.png" alt="Nagad">
+      <img src="assets/payment/rocket.png" alt="Rocket">
+      <img src="assets/payment/visa.png" alt="Visa">
+      <img src="assets/payment/mastercard.png" alt="MasterCard">
+      <img src="assets/payment/amex.png" alt="Amex">
+      <img src="assets/payment/upay.png" alt="Upay">
+    </div>
+    
+    <div class="text-center mt-3">
+      &copy; 2025 - Training Center - <a href="#">Privacy</a>
+    </div>
+  </div>
+</footer>
+
+

@@ -1,0 +1,130 @@
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 100;
+  padding: 48px 0 0;
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+  width: 280px; /* Fixed width */
+  height: 250px;
+}
+  .sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+    padding: 0.75rem 1rem;
+    border-radius: 0.25rem;
+    margin: 0.25rem 0.5rem;
+  }
+
+    .sidebar .nav-link:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .sidebar .nav-link.active {
+      color: #fff;
+      background-color: #0d6efd;
+    }
+
+    .sidebar .nav-link i {
+      margin-right: 4px;
+      color: inherit;
+    }
+
+/* Main content area */
+main {
+  margin-left: 280px; /* Same as sidebar width */
+  width: calc(100% - 280px);
+  padding: 20px;
+}
+
+@media (max-width: 767.98px) {
+  .sidebar {
+    width: 100%;
+    position: relative;
+    height: auto;
+  }
+
+  main {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* Card header styling */
+.card-header {
+  font-weight: 600;
+}
+
+/* Table styling */
+.table-responsive {
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+/* Button spacing */
+.btn-group .btn {
+  margin-right: 5px;
+}
+
+  .btn-group .btn:last-child {
+    margin-right: 0;
+  }
+
+/* Modal styling */
+.modal-header {
+  padding: 1rem 1.5rem;
+}
+
+/* Permission cards */
+.permission-card {
+  transition: all 0.3s ease;
+}
+
+  .permission-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+/* Add to your component's CSS */
+.permission-list {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.permission-item {
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+  .permission-item:last-child {
+    border-bottom: none;
+  }
+
+.form-check {
+  margin-right: 12px;
+  white-space: nowrap;
+}
+
+.form-check-input {
+  margin-right: 5px;
+}
+/* Add to your component's CSS */
+.user-role-badge {
+  font-size: 0.8rem;
+  margin-right: 0.3rem;
+  margin-bottom: 0.3rem;
+  display: inline-block;
+}
+
+.user-table {
+  font-size: 0.9rem;
+}
+
+  .user-table th {
+    font-weight: 500;
+  }
+
+.user-actions {
+  white-space: nowrap;
+}

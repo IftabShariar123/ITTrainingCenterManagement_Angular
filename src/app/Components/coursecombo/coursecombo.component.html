@@ -1,0 +1,234 @@
+
+
+
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center">
+    <div class="col-md-4">
+      <h3>Course Combo List</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Combo</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Search by dropdown -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="comboName">Combo Name</option>
+        <option value="selectedCourse">Courses</option>
+        <!--<option value="remarks">Remarks</option>-->
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  @if (isLoading) {
+  <div class="text-center p-5">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+  } @else if (filteredList && filteredList.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('comboName')" class="sortable">
+          Combo Name
+          <span *ngIf="sortColumn === 'comboName'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('selectedCourse')" class="sortable">
+          Courses
+          <span *ngIf="sortColumn === 'selectedCourse'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('isActive')" class="sortable">
+          Status
+          <span *ngIf="sortColumn === 'isActive'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (combo of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ combo.comboName }}</td>
+        <td>{{ combo.selectedCourse || 'None' }}</td>
+        <td>
+          <span class="badge" [ngClass]="combo.isActive ? 'bg-success' : 'bg-secondary'">
+            {{ combo.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onDetails(combo)">Details</button> ||
+          <button class="btn btn-primary" (click)="onEdit(combo)">Edit</button> ||
+          <button class="btn btn-danger" (click)="onDelete(combo)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Course Combos Found</h5>
+  }
+</div>
+
+<!-- Combo Modal -->
+<div class="modal" id="comboModal" #comboModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        @if(comboForm.value.courseComboId != 0) {
+        <h4 class="modal-title">Update Course Combo</h4>
+        } @else {
+        <h4 class="modal-title">Add Course Combo</h4>
+        }
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="comboForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="courseComboId">
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Combo Name</label>
+              <input type="text" formControlName="comboName" class="form-control" placeholder="Enter combo name">
+              @if (comboForm.get('comboName')?.invalid && (comboForm.get('comboName')?.dirty || comboForm.get('comboName')?.touched)) {
+              <div class="text-danger">Combo name is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Courses</label>
+              <div class="row">
+                @for (course of courseList; track course.courseId) {
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox"
+                           [id]="'course-' + course.courseId"
+                           [checked]="isCourseSelected(course.courseId)"
+                           (change)="onCourseCheckboxChange($event, course.courseId)">
+                    <label class="form-check-label" [for]="'course-' + course.courseId">
+                      {{ course.courseName }}
+                    </label>
+                  </div>
+                </div>
+                }
+              </div>
+              <!-- Error message for minimum courses -->
+              @if (comboForm.get('selectedCourseIds')?.errors?.['minSelected']) {
+              <div class="text-danger">
+                Please select at least {{ comboForm.get('selectedCourseIds')?.errors?.['minSelected'].required }} courses
+                (Currently selected: {{ comboForm.get('selectedCourseIds')?.errors?.['minSelected'].actual }})
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <div class="form-check">
+                <input type="checkbox" formControlName="isActive" class="form-check-input">
+                <label class="form-check-label">Is Active?</label>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Remarks</label>
+            <input type="text" formControlName="remarks" class="form-control" placeholder="Remarks">
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          @if (comboForm.value.courseComboId == 0) {
+          <button type="submit"
+                  [disabled]="comboForm.invalid || isSubmitting || comboForm.get('selectedCourseIds')?.value?.length < 2"
+                  class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Saving...</span>
+            } @else {
+            Save
+            }
+          </button>
+          } @else {
+          <button type="submit" [disabled]="comboForm.invalid || isSubmitting" class="btn btn-success">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Updating...</span>
+            } @else {
+            Update
+            }
+          </button>
+          }
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">Course Combo Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedCombo">
+        <p><strong>Combo Name:</strong> {{ selectedCombo.comboName }}</p>
+        <p><strong>Courses:</strong> {{ selectedCombo.selectedCourse || 'None' }}</p>
+        <p>
+          <strong>Status:</strong>
+          <span class="badge" [ngClass]="selectedCombo.isActive ? 'bg-success' : 'bg-secondary'">
+            {{ selectedCombo.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </p>
+        <p><strong>Remarks:</strong> {{ selectedCombo?.remarks }}</p>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

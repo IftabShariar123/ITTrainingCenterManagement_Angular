@@ -1,0 +1,21 @@
+.trainee-photo-container {
+  width: 120px;
+  height: 120px;
+  border: 1px solid #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.trainee-photo {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+}
+
+.no-image-placeholder {
+  color: #999;
+  text-align: center;
+  padding: 10px;
+}

@@ -1,0 +1,167 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6"><h3>Trainee Attendance</h3></div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Mark Attendance</button>
+    </div>
+  </div>
+
+  <!-- Attendance List Table -->
+  <div class="mt-3">
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Date</th>
+          <th>Batch</th>
+          <th>Instructor</th>
+          <th>Total Present</th>
+          <th>Total Absent</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let attendance of attendanceList">
+          <td>{{ attendance.attendanceDate | date:'mediumDate' }}</td>
+          <td>{{ attendance.batch?.batchName }}</td>
+          <td>{{ attendance.instructor?.employee?.employeeName }}</td>
+          <td>{{ getPresentCount(attendance) }}</td>
+          <td>{{ getAbsentCount(attendance) }}</td>
+          <td>
+            <button class="btn btn-info btn-sm me-1" (click)="viewDetails(attendance.traineeAttendanceId)">View</button>
+            <button class="btn btn-primary btn-sm me-1" (click)="editAttendance(attendance.traineeAttendanceId)">Edit</button>
+            <button class="btn btn-danger btn-sm" (click)="deleteAttendance(attendance.traineeAttendanceId)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="myModal" #myModal>
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <form [formGroup]="attendanceForm" (ngSubmit)="saveAttendance()">
+          <div class="modal-header bg-primary text-white">
+            <h5 class="modal-title">
+              {{ isEditMode ? 'Edit' : 'Create' }} Trainee Attendance
+            </h5>
+            <button type="button" class="btn-close" (click)="closeModal()"></button>
+          </div>
+
+          <div class="modal-body">
+            <!-- View Mode Content -->
+            <div *ngIf="selectedAttendance && !isEditMode" class="view-mode">
+              <div class="row mb-3">
+                <div class="col-md-4">
+                  <strong>Date:</strong> {{ selectedAttendance.attendanceDate | date:'mediumDate' }}
+                </div>
+                <div class="col-md-4">
+                  <strong>Batch:</strong> {{ selectedAttendance.batch?.batchName }}
+                </div>
+                <div class="col-md-4">
+                  <strong>Instructor:</strong> {{ selectedAttendance.instructor?.employee?.employeeName }}
+                </div>
+              </div>
+
+              <table class="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>SL</th>
+                    <th>Trainee Name</th>
+                    <th>Admission No</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let detail of selectedAttendance.traineeAttendanceDetails; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ detail.trainee?.registration?.traineeName }}</td>
+                    <td>{{ detail.admission?.admissionNo }}</td>
+                    <td>
+                      <span class="badge" [ngClass]="detail.attendanceStatus ? 'bg-success' : 'bg-danger'">
+                        {{ detail.attendanceStatus ? 'Present' : 'Absent' }}
+                      </span>
+                    </td>
+                    <td>{{ detail.remarks }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Edit/Create Mode Content -->
+            <div *ngIf="isEditMode || !selectedAttendance">
+              <div class="mb-3">
+                <label>Attendance Date</label>
+                <input type="date" formControlName="attendanceDate" class="form-control" />
+              </div>
+
+              <div class="mb-3">
+                <label>Batch</label>
+                <select class="form-select" formControlName="batchId" (change)="onBatchSelect()">
+                  <option [ngValue]="0">-- Select Batch --</option>
+                  <option *ngFor="let batch of batchList" [ngValue]="batch.batchId">
+                    {{ batch.batchName }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label>Instructor</label>
+                <input type="text" class="form-control" [value]="selectedBatchDetails?.instructorName" readonly />
+              </div>
+
+              <div *ngIf="traineeFormArray.length > 0">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>SL</th>
+                      <th>Trainee Name</th>
+                      <th>Admission No</th>
+                      <th>Invoice No</th>
+                      <th>Status</th>
+                      <th>Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody formArrayName="traineeAttendanceDetails">
+                    <!--<tr *ngFor="let traineeGroup of traineeFormArray.controls; let i = index" [formGroupName]="i">
+    <td>{{ i + 1 }}</td>
+    <td>{{ trainees[i]?.traineeName || '-' }}</td>
+    <td>{{ trainees[i]?.admissionNo || '-' }}</td>
+    <td>{{ trainees[i]?.invoiceNos?.[0]?.invoiceNo || 'N/A' }}</td>
+    <td>
+      <input type="checkbox" formControlName="attendanceStatus" />
+    </td>
+    <td>
+      <input type="text" class="form-control" formControlName="remarks" />
+    </td>
+  </tr>-->
+                    <tr *ngFor="let traineeGroup of traineeFormArray.controls; let i = index" [formGroupName]="i">
+                      <td>{{ i + 1 }}</td>
+                      <td>{{ traineeGroup.value._traineeName || '-' }}</td>
+                      <td>{{ traineeGroup.value._admissionNo || '-' }}</td>
+                      <td>{{ traineeGroup.value._invoiceNo || 'N/A' }}</td>
+                      <td>
+                        <input type="checkbox" formControlName="attendanceStatus" />
+                      </td>
+                      <td>
+                        <input type="text" class="form-control" formControlName="remarks" />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button *ngIf="isEditMode || !selectedAttendance" type="submit" class="btn btn-success" [disabled]="isSubmitting">
+              {{ isEditMode ? 'Update' : 'Save' }}
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

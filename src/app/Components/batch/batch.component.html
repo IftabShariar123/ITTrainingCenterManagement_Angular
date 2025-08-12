@@ -1,0 +1,271 @@
+<div class="container-fluid">
+  <div *ngIf="showAlert" class="alert alert-{{alertType}} alert-dismissible fade show" role="alert">
+    {{alertMessage}}
+    <button type="button" class="btn-close" (click)="showAlert = false"></button>
+  </div>
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Batch List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="showAddForm()"> Add Batch</button>
+    </div>
+  </div>
+
+  <div class="row mb-2">
+    <div class="col-6">
+      <label for="pageSize" class="form-label">Records Per Page:</label>
+      <select id="pageSize" class="form-select w-auto d-inline-block"
+              [(ngModel)]="itemsPerPage"
+              (change)="p = 1">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+        <option [ngValue]="50">50</option>
+      </select>
+    </div>
+  </div>
+
+  <table class="table table-bordered table-striped" *ngIf="batches && batches.length > 0">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th>Batch Name</th>
+        <th>Course</th>
+        <th>Type</th>
+        <th>Status</th>
+        <th style="text-align:center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of batches | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+        <td>{{ i + 1 }}</td>
+        <td>{{ item.batchName }}</td>
+        <td>{{ item.courseName }}</td>
+        <td>{{ item.batchType }}</td>
+        <td>
+          <span [class]="item.isActive ? 'text-success' : 'text-danger'">
+            {{ item.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info btn-sm me-2" (click)="showDetails(item)">Details</button>
+          <button class="btn btn-primary btn-sm" (click)="showEditForm(item)">Edit</button>
+          <button class="btn btn-danger btn-sm" (click)="deleteBatch(item.batchId)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="p = $event" class="mt-3"></pagination-controls>
+
+  <div *ngIf="batches.length === 0" class="text-center mt-5">
+    <h5>No Batch Found</h5>
+  </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="batchModal" #batchModal style="display: block;" *ngIf="showForm">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">{{ isEditMode ? 'Edit Batch' : 'Add Batch' }}</h4>
+        <button type="button" class="btn-close" (click)="cancelForm()"></button>
+      </div>
+
+      <!-- Form -->
+      <form [formGroup]="batchForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label>Batch Name</label>
+              <input class="form-control" formControlName="batchName"
+                     readonly placeholder="Auto-generated">
+            </div>
+            <div class="col-md-6">
+              <label>Course</label>
+              <select class="form-select" formControlName="courseId" (change)="onCourseSelect()">
+                <option value="">Select Course</option>
+                <option *ngFor="let c of courses" [value]="c.courseId">{{ c.courseName }}</option>
+              </select>
+            </div>
+          </div>
+
+
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label>Start Date</label>
+              <input class="form-control" type="date" formControlName="startDate">
+            </div>
+            <div class="col-md-6">
+              <label>End Date</label>
+              <input class="form-control" type="date" formControlName="endDate">
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label>Batch Type</label>
+              <select class="form-select" formControlName="batchType">
+                <option *ngFor="let type of batchTypes" [value]="type">{{ type }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Instructor</label>
+              <select class="form-select" formControlName="instructorId" (change)="onInstructorChange()">
+                <option value="">Select Instructor</option>
+                <option *ngFor="let i of filteredInstructors" [value]="i.instructorId">
+                  {{ i.employeeName }}
+                </option>
+              </select>
+            </div>
+            <div class="row mb-2" *ngIf="batchForm.get('previousInstructorIds')?.value?.length > 0">
+              <div class="col-md-12">
+                <label>Previous Instructors</label>
+                <div class="p-2 border rounded">
+                  {{ getInstructorNames(batchForm.get('previousInstructorIds')?.value) }}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-6">
+              <label>Classroom</label>
+              <select class="form-select" formControlName="classRoomId">
+                <option *ngFor="let r of classrooms" [value]="r.classRoomId">
+                  {{ r.roomName }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-6 mt-4">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" formControlName="isActive">
+                <label class="form-check-label">Active</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mb-2">
+            <div class="col-md-12">
+              <label>Remarks</label>
+              <textarea class="form-control" formControlName="remarks" rows="2"></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Class Schedules</label>
+              <select class="form-select" (change)="onScheduleSelect($event)">
+                <option value="">-- Select Schedule --</option>
+                <option *ngFor="let s of schedules" [value]="s.classScheduleId">
+                  {{ getScheduleDisplay(s) }}
+                </option>
+              </select>
+
+              <div class="mt-2 d-flex flex-wrap gap-2">
+                <div *ngFor="let s of selectedSchedules" class="badge bg-dark p-2">
+                  {{ getScheduleDisplay(s) }}
+                  <button type="button" class="btn btn-sm btn-danger ms-2"
+                          (click)="removeSchedule(s.classScheduleId)">
+                    &times;
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" [disabled]="batchForm.invalid">
+            {{ isEditMode ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-danger" (click)="cancelForm()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal style="display: block;" *ngIf="showDetailsModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h4 class="modal-title">Batch Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetails()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedBatch">
+        <div class="row mb-3">
+          <div class="col-md-6">
+            <h5>Basic Information</h5>
+            <ul class="list-group">
+              <li class="list-group-item">
+                <strong>Batch Name:</strong> {{selectedBatch.batchName}}
+              </li>
+              <li class="list-group-item">
+                <strong>Course:</strong> {{selectedBatch.courseName}}
+              </li>
+              <li class="list-group-item">
+                <strong>Type:</strong> {{selectedBatch.batchType}}
+              </li>
+              <li class="list-group-item">
+                <strong>Status:</strong>
+                <span [class]="selectedBatch.isActive ? 'text-success' : 'text-danger'">
+                  {{selectedBatch.isActive ? 'Active' : 'Inactive'}}
+                </span>
+              </li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h5>Schedule</h5>
+            <ul class="list-group">
+              <li class="list-group-item">
+                <strong>Start Date:</strong> {{selectedBatch.startDate | date}}
+              </li>
+              <li class="list-group-item">
+                <strong>End Date:</strong> {{selectedBatch.endDate | date}}
+              </li>
+              <li class="list-group-item">
+                <strong>Classroom:</strong> {{selectedBatch.classRoomName}}
+              </li>
+              <li class="list-group-item">
+                <strong>Instructor:</strong>
+                {{selectedBatch.instructor?.employee?.employeeName || selectedBatch.employeeName || 'Not assigned'}}
+              </li>
+             
+              <li class="list-group-item">
+                <strong>Class Schedule:</strong>
+                {{getSelectedSchedulesDisplay(selectedBatch.selectedScheduleIds)}}
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="row mb-3" *ngIf="selectedBatch.previousInstructorIds?.length">
+          <div class="col-12">
+            <h5>Previous Instructors</h5>
+            <div class="p-3 bg-light rounded">
+              {{getInstructorNames(selectedBatch.previousInstructorIds)}}
+            </div>
+          </div>
+        </div>
+
+        <div class="row" *ngIf="selectedBatch.remarks">
+          <div class="col-12">
+            <h5>Remarks</h5>
+            <div class="p-3 bg-light rounded">
+              {{selectedBatch.remarks}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" (click)="closeDetails()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

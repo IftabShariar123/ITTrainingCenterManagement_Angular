@@ -1,0 +1,276 @@
+<div class="container-fluid">
+  <!-- Header Row -->
+  <div class="row p-2 bg-info align-items-center">
+    <div class="col-md-4">
+      <h3>Offer List</h3>
+    </div>
+    <div class="col-md-4">
+      <!-- Centered Search Bar -->
+    </div>
+    <div class="col-md-4 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Offer</button>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-between align-items-center mb-1 p-2">
+    <div class="d-flex align-items-center">
+      <label class="me-2 mb-0">Items per page:</label>
+      <select class="form-select w-auto" [(ngModel)]="itemsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+
+    <!-- Search filter dropdown -->
+    <div class="d-flex align-items-center ms-3">
+      <label class="me-2 mb-0">Search by:</label>
+      <select class="form-select me-2" [(ngModel)]="searchBy" style="width: 150px;">
+        <option value="offerName">Offer Name</option>
+        <option value="offerType">Offer Type</option>
+        <option value="discountPercentage">Discount</option>
+        <option value="seasonOrOccasion">Season/Occasion</option>
+        <option value="isActive">Status</option>
+      </select>
+    </div>
+
+    <div class="d-flex align-items-center ms-3">
+      <input type="text" class="form-control" placeholder="Search..." [(ngModel)]="searchText"
+             (input)="applyFilter()" style="width: 250px;">
+    </div>
+  </div>
+
+  @if (filteredOffers && filteredOffers.length > 0) {
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th>SL No</th>
+        <th (click)="sort('offerName')" class="sortable">
+          Offer Name
+          <span *ngIf="sortColumn === 'offerName'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('offerType')" class="sortable">
+          Type
+          <span *ngIf="sortColumn === 'offerType'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('discountPercentage')" class="sortable">
+          Discount
+          <span *ngIf="sortColumn === 'discountPercentage'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('validFrom')" class="sortable">
+          Valid From
+          <span *ngIf="sortColumn === 'validFrom'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('validTo')" class="sortable">
+          Valid To
+          <span *ngIf="sortColumn === 'validTo'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th (click)="sort('isActive')" class="sortable">
+          Status
+          <span *ngIf="sortColumn === 'isActive'">
+            {{ sortDirection === 'asc' ? '↑' : '↓' }}
+          </span>
+        </th>
+        <th class="text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (offer of filteredOffers | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; track $index) {
+      <tr>
+        <td>{{ (p - 1) * itemsPerPage + $index + 1 }}</td>
+        <td>{{ offer.offerName }}</td>
+        <td>{{ offer.offerType }}</td>
+        <td>{{ offer.discountPercentage }}%</td>
+        <td>{{ offer.validFrom | date:'shortDate' }}</td>
+        <td>{{ offer.validTo | date:'shortDate' }}</td>
+        <td>
+          <span class="badge" [ngClass]="offer.isActive ? 'bg-success' : 'bg-danger'">
+            {{ offer.isActive ? 'Active' : 'Inactive' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info" (click)="onDetails(offer)">Details</button> ||
+          <button class="btn btn-primary" (click)="onEdit(offer)">Edit</button> ||
+          <button class="btn btn-danger" (click)="onDelete(offer)">Delete</button>
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+  <div class="d-flex justify-content-center">
+    <pagination-controls (pageChange)="p = $event"
+                         previousLabel="Prev"
+                         nextLabel="Next"
+                         [maxSize]="5"
+                         [responsive]="true">
+    </pagination-controls>
+  </div>
+  } @else {
+  <h5 class="text-center p-5">No Offers Found</h5>
+  }
+</div>
+
+<!-- Offer Modal -->
+<div class="modal" id="offerModal" #offerModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info">
+        @if(offerForm.value.offerId != 0) {
+        <h4 class="modal-title">Update Offer</h4>
+        } @else {
+        <h4 class="modal-title">Add Offer</h4>
+        }
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <form [formGroup]="offerForm" (ngSubmit)="onSubmit()">
+        <div class="modal-body">
+          <input type="hidden" formControlName="offerId">
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Offer Name</label>
+              <input type="text" formControlName="offerName" class="form-control" placeholder="Enter offer name">
+              @if (offerForm.get('offerName')?.invalid && (offerForm.get('offerName')?.dirty || offerForm.get('offerName')?.touched)) {
+              <div class="text-danger">Offer name is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Offer Type</label>
+              <select class="form-select" formControlName="offerType">
+                <option value="">Select Offer Type</option>
+                @for (type of offerTypes; track type) {
+                <option [value]="type">{{ type }}</option>
+                }
+              </select>
+              @if (offerForm.get('offerType')?.invalid && (offerForm.get('offerType')?.dirty || offerForm.get('offerType')?.touched)) {
+              <div class="text-danger">Offer type is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Discount Percentage</label>
+              <input type="number" formControlName="discountPercentage" class="form-control" placeholder="Enter discount percentage">
+              @if (offerForm.get('discountPercentage')?.invalid && (offerForm.get('discountPercentage')?.dirty || offerForm.get('discountPercentage')?.touched)) {
+              <div class="text-danger">Discount percentage is required (0-100)</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Season/Occasion</label>
+              <input type="text" formControlName="seasonOrOccasion" class="form-control" placeholder="Enter season/occasion">
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Valid From</label>
+              <input type="datetime-local" formControlName="validFrom" class="form-control">
+              @if (offerForm.get('validFrom')?.invalid && (offerForm.get('validFrom')?.dirty || offerForm.get('validFrom')?.touched)) {
+              <div class="text-danger">Valid from date is required</div>
+              }
+            </div>
+            <div class="col-md-6">
+              <label>Valid To</label>
+              <input type="datetime-local" formControlName="validTo" class="form-control">
+              @if (offerForm.get('validTo')?.invalid && (offerForm.get('validTo')?.dirty || offerForm.get('validTo')?.touched)) {
+              <div class="text-danger">Valid to date is required</div>
+              }
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Description</label>
+              <textarea formControlName="description" rows="3" class="form-control" placeholder="Enter description"></textarea>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label>Payment Condition</label>
+              <input type="text" formControlName="paymentCondition" class="form-control" placeholder="Enter payment condition">
+            </div>
+            <div class="col-md-6">
+              <label>Status</label>
+              <select class="form-select" formControlName="isActive">
+                <option [value]="true">Active</option>
+                <option [value]="false">Inactive</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-12">
+              <label>Remarks</label>
+              <textarea formControlName="remarks" rows="2" class="form-control" placeholder="Enter remarks"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          @if (offerForm.value.offerId == 0) {
+          <button type="submit" [disabled]="offerForm.invalid || isSubmitting" class="btn btn-primary">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Saving...</span>
+            } @else {
+            Save
+            }
+          </button>
+          } @else {
+          <button type="submit" [disabled]="offerForm.invalid || isSubmitting" class="btn btn-success">
+            @if (isSubmitting) {
+            <span class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+            <span role="status">Updating...</span>
+            } @else {
+            Update
+            }
+          </button>
+          }
+          <button type="button" class="btn btn-danger" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Offer Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header bg-secondary text-white">
+        <h4 class="modal-title">Offer Details</h4>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedOffer">
+        <p><strong>Offer Name:</strong> {{ selectedOffer.offerName }}</p>
+        <p><strong>Offer Type:</strong> {{ selectedOffer.offerType }}</p>
+        <p><strong>Discount Percentage:</strong> {{ selectedOffer.discountPercentage }}%</p>
+        <p><strong>Valid From:</strong> {{ selectedOffer.validFrom | date:'medium' }}</p>
+        <p><strong>Valid To:</strong> {{ selectedOffer.validTo | date:'medium' }}</p>
+        <p><strong>Season/Occasion:</strong> {{ selectedOffer.seasonOrOccasion }}</p>
+        <p><strong>Description:</strong> {{ selectedOffer.description }}</p>
+        <p><strong>Payment Condition:</strong> {{ selectedOffer.paymentCondition }}</p>
+        <p><strong>Status:</strong> {{ selectedOffer.isActive ? 'Active' : 'Inactive' }}</p>
+        <p><strong>Remarks:</strong> {{ selectedOffer.remarks }}</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-dark" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

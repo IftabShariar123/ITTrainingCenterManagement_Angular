@@ -1,0 +1,145 @@
+<div class="home-page">
+
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <h1 class="animate-on-scroll" [class.animate]="animatedElements[0]">Transform Your Career with Us</h1>
+      <p class="animate-on-scroll" [class.animate]="animatedElements[1]">Industry-leading training programs taught by experts</p>
+      <a routerLink="/courses" class="btn btn-primary animate-on-scroll" [class.animate]="animatedElements[2]">
+        Explore Courses
+      </a>
+    </div>
+    <div class="hero-shapes">
+      <div class="shape circle"></div>
+      <div class="shape triangle"></div>
+      <div class="shape square"></div>
+    </div>
+  </section>
+  <h1 style="text-align:center; color:cadetblue">Team Member</h1>
+  <div class="marquee-container">
+    <div class="marquee-content">
+      <div class="marquee-item" *ngFor="let person of duplicatedPersons">
+        <img [src]="person.img" [alt]="person.name" />
+        <strong style="color:darkblue">{{ person.name }}</strong>
+        <p>{{person.position}}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <section class="features-section">
+    <h2 class="section-title">Why Choose Us</h2>
+    <div class="features-grid">
+      <div class="feature-card animate-on-scroll" [class.animate]="animatedElements[3]">
+        <div class="icon-bg">
+          <i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <h3>Expert Instructors</h3>
+        <p>Learn from industry leaders with 10+ years of experience</p>
+      </div>
+
+      <div class="feature-card animate-on-scroll" [class.animate]="animatedElements[4]">
+        <div class="icon-bg">
+          <i class="fas fa-laptop-code"></i>
+        </div>
+        <h3>Hands-On Projects</h3>
+        <p>Build real-world applications for your portfolio</p>
+      </div>
+
+      <div class="feature-card animate-on-scroll" [class.animate]="animatedElements[5]">
+        <div class="icon-bg">
+          <i class="fas fa-briefcase"></i>
+        </div>
+        <h3>Career Support</h3>
+        <p>Get job placement assistance after graduation</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Courses Section -->
+  <section class="courses-section">
+    <div class="section-header">
+      <h2 class="section-title">Popular Courses</h2>
+      <a routerLink="/courses" class="view-all">View All Courses →</a>
+    </div>
+
+    <div class="course-cards">
+      <div class="course-card">
+        <div class="course-badge">Bestseller</div>
+        <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')"></div>
+        <div class="course-content">
+          <h3>Full Stack Web Development</h3>
+          <p>Master HTML, CSS, JavaScript, React, Node.js and build real-world applications</p>
+          <div class="course-meta">
+            <span><i class="fas fa-clock"></i> 12 Weeks</span>
+            <span><i class="fas fa-user-graduate"></i> Advanced</span>
+          </div>
+          <a routerLink="/course/web-development" class="btn btn-outline">View Details</a>
+        </div>
+      </div>
+
+      <div class="course-card">
+        <div class="course-badge">New</div>
+        <div class="course-image" style="background-image: url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1170&q=80')"></div>
+        <div class="course-content">
+          <h3>Data Science & AI</h3>
+          <p>Learn Python, data analysis, machine learning, and AI algorithms</p>
+          <div class="course-meta">
+            <span><i class="fas fa-clock"></i> 16 Weeks</span>
+            <span><i class="fas fa-user-graduate"></i> Intermediate</span>
+          </div>
+          <a routerLink="/course/data-science" class="btn btn-outline ">View Details</a>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section class="testimonials-section">
+    <h2 class="section-title">Student Success Stories</h2>
+
+    <div class="testimonials-container">
+      <div class="testimonial-card">
+        <div class="quote-icon">“</div>
+        <p class="testimonial-text">This program completely transformed my career. I went from a junior developer to team lead in just 9 months!</p>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Michael Johnson">
+          <div>
+            <h4>Michael Johnson</h4>
+            <p>Senior Developer at TechCorp</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="testimonial-card">
+        <div class="quote-icon">“</div>
+        <p class="testimonial-text">The hands-on projects gave me the confidence to switch careers. I landed my dream job before graduation!</p>
+        <div class="testimonial-author">
+          <img src="https://randomuser.me/api/portraits/women/44.jpg" alt="Sarah Williams">
+          <div>
+            <h4>Sarah Williams</h4>
+            <p>Data Scientist at DataInsights</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Ready to Transform Your Career?</h2>
+      <p>Join thousands of successful graduates today</p>
+      <div class="cta-buttons">
+        <a routerLink="/courses" class="btn btn-light">Browse Courses</a>
+        <a routerLink="/contact" class="btn btn-outline-light">Talk to Advisor</a>
+      </div>
+    </div>
+  </section>
+</div>

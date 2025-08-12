@@ -1,0 +1,212 @@
+<div class="container mt-4">
+  <h3 class="mb-3">
+    {{ isEditMode ? 'Update Assessment' : 'Add Assessment' }}
+  </h3>
+
+  <form [formGroup]="assessmentForm" (ngSubmit)="onSubmit()">
+    <div class="row gy-3">
+
+      <mat-form-field class="col-md-4" appearance="fill">
+        <mat-label>Search Batch</mat-label>
+        <input type="text"
+               matInput
+               [matAutocomplete]="auto"
+               [formControl]="batchSearchControl"
+               placeholder="Type to search"
+               [readonly]="isEditMode">
+        <mat-autocomplete #auto="matAutocomplete"
+                          (optionSelected)="onBatchSelected($event.option.value)"
+                          [disableRipple]="isEditMode">
+          <mat-option *ngFor="let batch of filteredBatchList" [value]="batch.batchName">
+            {{ batch.batchName }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+
+
+
+      <div class="col-md-4">
+        <label for="traineeId" class="form-label">Trainee *</label>
+        <select formControlName="traineeId"
+                class="form-select"
+                id="traineeId"
+                required
+                [disabled]="isEditMode || trainees.length === 0">
+          <option value="">-- Select Trainee --</option>
+
+          <!-- Show trainees if available -->
+          <option *ngFor="let t of trainees"
+                  [value]="t.traineeId">
+            {{ t.traineeName }} ({{ t.traineeIDNo || '' }})
+          </option>
+
+          <!-- Show message when no trainees available -->
+          <option *ngIf="trainees.length === 0" value="" disabled>
+            {{ 'No unassessed trainees available' }}
+          </option>
+        </select>
+
+      </div>
+
+      <!-- Instructor Name (readonly) -->
+      <div class="col-md-4">
+        <label class="form-label">Instructor</label>
+        <input type="text" class="form-control" [value]="selectedBatchInstructorName" readonly />
+      </div>
+
+      <!-- Assessment Date -->
+      <div class="col-md-6">
+        <label class="form-label">Assessment Date *</label>
+        <input type="date" formControlName="assessmentDate" class="form-control" required />
+      </div>
+
+      <!-- Assessment Type -->
+      <div class="col-md-6">
+        <label class="form-label">Assessment Type *</label>
+        <select formControlName="assessmentType" class="form-select" required>
+          <option value="">-- Select Type --</option>
+          <option *ngFor="let type of assessmentTypes" [value]="type">{{ type }}</option>
+        </select>
+        <div *ngIf="assessmentForm.get('assessmentType')?.invalid && assessmentForm.get('assessmentType')?.touched"
+             class="text-danger small">
+          Assessment Type is required
+        </div>
+      </div>
+
+      <!-- Scores -->
+      <div class="col-md-3">
+        <label class="form-label">Theoretical Score (0-100)</label>
+        <input type="number" formControlName="theoreticalScore" min="0" max="100" class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Practical Score (0-100)</label>
+        <input type="number" formControlName="practicalScore" min="0" max="100" class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Overall Score</label>
+        <input type="number" formControlName="overallScore" class="form-control" readonly />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Days Present</label>
+        <input type="number" formControlName="daysPresent" min="0" class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Total Days</label>
+        <input type="number" formControlName="totalDays" min="0" class="form-control" />
+      </div>
+
+      <div class="col-md-3">
+        <label class="form-label">Attendance %</label>
+        <input type="text" formControlName="attendancePercentage" class="form-control" readonly />
+      </div>
+
+      <!-- Participation Level -->
+      <div class="col-md-3">
+        <label class="form-label">Participation Level</label>
+        <select formControlName="participationLevel" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let pl of participationLevels" [value]="pl">{{ pl }}</option>
+        </select>
+      </div>
+
+      <!-- Skills Ratings -->
+      <div class="col-md-4">
+        <label class="form-label">Technical Skills Rating</label>
+        <select formControlName="technicalSkillsRating" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let r of skillRatings" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Communication Skills Rating</label>
+        <select formControlName="communicationSkillsRating" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let r of skillRatings" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Teamwork Rating</label>
+        <select formControlName="teamworkRating" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let r of skillRatings" [value]="r">{{ r }}</option>
+        </select>
+      </div>
+
+      <!-- Behavioral -->
+      <div class="col-md-4">
+        <label class="form-label">Discipline Remarks</label>
+        <input type="text" formControlName="disciplineRemarks" class="form-control" />
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Punctuality</label>
+        <select formControlName="punctuality" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let p of punctualityOptions" [value]="p">{{ p }}</option>
+        </select>
+      </div>
+
+      <div class="col-md-4">
+        <label class="form-label">Attitude Rating</label>
+        <select formControlName="attitudeRating" class="form-select">
+          <option value="">-- Select --</option>
+          <option *ngFor="let a of attitudeRatings" [value]="a">{{ a }}</option>
+        </select>
+      </div>
+
+      <!-- Trainer Feedback -->
+      <div class="col-md-6">
+        <label class="form-label">Strengths</label>
+        <textarea formControlName="strengths" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label">Weaknesses</label>
+        <textarea formControlName="weaknesses" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Improvement Areas</label>
+        <textarea formControlName="improvementAreas" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="col-12">
+        <label class="form-label">Trainer Remarks</label>
+        <textarea formControlName="trainerRemarks" class="form-control" rows="3"></textarea>
+      </div>
+
+      <div class="col-md-6 mt-2 d-flex align-items-center">
+        <input type="checkbox" formControlName="isFinalized" id="isFinalized" class="form-check-input me-2" />
+        <label for="isFinalized" class="form-check-label mb-0">Is Finalized?</label>
+      </div>
+
+    </div>
+
+    <!-- Form Footer with Save Button -->
+    <div class="row mt-4">
+      <div class="col-12 text-end">
+        <button type="button"
+                class="btn btn-secondary me-2"
+                (click)="router.navigate(['/assessment'])">
+          Cancel
+        </button>
+
+        <button type="submit"
+                class="btn btn-primary"
+                [disabled]="assessmentForm.invalid || isSubmitting"
+                (click)="onSubmit()">
+          <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm"></span>
+          {{ isEditMode ? 'Update' : 'Save' }}
+        </button>
+      </div>
+    </div>
+
+
+  </form>
+</div>

@@ -1,0 +1,245 @@
+<!--<div class="container-fluid">
+  <div class="row p-2 bg-info text-white">
+    <div class="col-6">
+      <h3>Assessment List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="navigateToCreate()">Add Assessment</button>
+    </div>
+  </div>-->
+
+  <!-- Search Filter -->
+  <!--<div class="row mb-3 mt-2">
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="Search assessments..."
+             [(ngModel)]="searchTerm" (input)="filterAssessments()">
+    </div>
+    <div class="col-md-6">
+      <label for="pageSize" class="form-label ms-3">Records Per Page:</label>
+      <select id="pageSize" class="form-select w-auto d-inline-block" [(ngModel)]="itemsPerPage">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+      </select>
+    </div>
+  </div>-->
+
+  <!-- Assessment Table -->
+  <!--<table *ngIf="filteredList.length > 0" class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Sl No</th>
+        <th>Assessment Type</th>
+        <th>Date</th>
+        <th>Trainee</th>
+        <th>Batch</th>
+        <th>Overall Score</th>
+        <th>Finalized</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+        <td>{{ i + 1 + (p - 1) * itemsPerPage }}</td>
+        <td>{{ item.assessmentType }}</td>
+        <td>{{ item.assessmentDate | date }}</td>
+        <td>{{ item.traineeName || 'N/A' }}</td>
+        <td>{{ item.batchName || 'N/A' }}</td>
+        <td>{{ item.overallScore || 'N/A' }}</td>
+        <td>
+          <span [class.text-success]="item.isFinalized" [class.text-danger]="!item.isFinalized">
+            {{ item.isFinalized ? 'Yes' : 'No' }}
+          </span>
+        </td>
+        <td class="text-center">
+          <button class="btn btn-info btn-sm me-1" (click)="onDetails(item)">Details</button>
+          <button class="btn btn-primary btn-sm me-1" (click)="onEdit(item)" [disabled]="item.isFinalized">Edit</button>
+          <button class="btn btn-danger btn-sm" (click)="onDelete(item)" [disabled]="item.isFinalized">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="p = $event"></pagination-controls>
+
+  <div *ngIf="filteredList.length === 0" class="text-center p-5">
+    <h5>No Assessments Found</h5>
+  </div>-->
+
+  <!-- Details Modal -->
+  <!--<div class="modal fade" id="detailsModal" tabindex="-1" *ngIf="selectedAssessment">-->
+    <!-- Modal content same as before -->
+  <!--</div>-->
+
+  <!-- Edit Modal -->
+  <!--<div class="modal fade" id="editModal" tabindex="-1" *ngIf="selectedAssessment">-->
+    <!-- Modal content same as before -->
+  <!--</div>
+</div>-->
+
+
+<div class="container-fluid">
+  <div class="row p-2 bg-info text-white">
+    <div class="col-6">
+      <h3>Assessment List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="navigateToCreate()">Add Assessment</button>
+    </div>
+  </div>
+
+  <!-- Search Filter -->
+  <div class="row mb-3 mt-2">
+    <div class="col-md-6">
+      <input type="text" class="form-control" placeholder="Search assessments..."
+             [(ngModel)]="searchTerm" (input)="filterAssessments()">
+    </div>
+    <div class="col-md-6">
+      <label for="pageSize" class="form-label ms-3">Records Per Page:</label>
+      <select id="pageSize" class="form-select w-auto d-inline-block" [(ngModel)]="itemsPerPage">
+        <option [ngValue]="5">5</option>
+        <option [ngValue]="10">10</option>
+        <option [ngValue]="20">20</option>
+      </select>
+    </div>
+  </div>
+  <!-- Assessment Table -->
+  <table *ngIf="filteredList.length > 0" class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Sl No</th>
+        <th>Date</th>
+        <th>Assessment Type</th>
+        <th>Trainee</th>
+        <th>Batch</th>
+        <th class="text-center">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredList | paginate: { itemsPerPage: itemsPerPage, currentPage: p }; let i = index">
+        <td>{{ i + 1 + (p - 1) * itemsPerPage }}</td>
+        <td>{{ item.assessmentDate | date }}</td>
+        <td>{{ item.assessmentType }}</td>
+        <td>{{ item.traineeName || 'N/A' }}</td>
+        <td>{{ item.batchName || 'N/A' }}</td>
+
+        <td class="text-center">
+          <button class="btn btn-info btn-sm me-1" (click)="openDetailsModal(item)">Details</button>
+          <button class="btn btn-primary btn-sm me-1" (click)="onEdit(item)" [disabled]="item.isFinalized">Edit</button>
+          <button class="btn btn-danger btn-sm" (click)="onDelete(item)" [disabled]="item.isFinalized">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <pagination-controls (pageChange)="p = $event"></pagination-controls>
+
+  <div *ngIf="filteredList.length === 0" class="text-center p-5">
+    <h5>No Assessments Found</h5>
+  </div>
+
+  <!-- Details Modal -->
+  <div class="modal" id="detailsModal" #detailsModal tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header bg-info text-white">
+          <h5 class="modal-title">Assessment Details</h5>
+          <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+        </div>
+        <div class="modal-body" *ngIf="selectedAssessment">
+          <div class="row">
+            <div class="col-md-6">
+              <h5>Basic Information</h5>
+              <ul class="list-group">
+                <li class="list-group-item"><strong>Trainee:</strong> {{selectedAssessment.traineeName || 'N/A'}}</li>
+                <li class="list-group-item"><strong>Instructor:</strong> {{selectedAssessment.instructorName || 'N/A'}}</li>
+                <li class="list-group-item"><strong>Batch:</strong> {{selectedAssessment.batchName || 'N/A'}}</li>
+                <li class="list-group-item"><strong>Assessment Type:</strong> {{selectedAssessment.assessmentType}}</li>
+                <li class="list-group-item"><strong>Date:</strong> {{selectedAssessment.assessmentDate | date}}</li>
+                <li class="list-group-item">
+                  <strong>Finalized:</strong>
+                  <span [class.text-success]="selectedAssessment.isFinalized" [class.text-danger]="!selectedAssessment.isFinalized">
+                    {{selectedAssessment.isFinalized ? 'Yes' : 'No'}}
+                  </span>
+                </li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <h5>Scores</h5>
+              <ul class="list-group">
+                <!-- assessment.component.html এ নিচের মতো করে আপডেট করুন -->
+                <li class="list-group-item"><strong>Theoretical:</strong> {{selectedAssessment.theoreticalScore || 'N/A'}}/100</li>
+                <li class="list-group-item"><strong>Practical:</strong> {{selectedAssessment.practicalScore || 'N/A'}}/100</li>
+                <li class="list-group-item"><strong>Overall:</strong> {{(selectedAssessment.overallScore || 0).toFixed(2)}}/100</li>
+                <li class="list-group-item"><strong>Attendance:</strong> {{(selectedAssessment.attendancePercentage || 0).toFixed(2)}}%</li>
+                <li class="list-group-item"><strong>Date:</strong> {{selectedAssessment.assessmentDate | date:'mediumDate'}}</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-12">
+              <h5>Evaluation</h5>
+              <div class="card">
+                <div class="card-body">
+                  <p><strong>Participation:</strong> {{selectedAssessment.participationLevel || 'N/A'}}</p>
+                  <p><strong>Technical Skills:</strong> {{selectedAssessment.technicalSkillsRating || 'N/A'}}</p>
+                  <p><strong>Communication:</strong> {{selectedAssessment.communicationSkillsRating || 'N/A'}}</p>
+                  <p><strong>Teamwork:</strong> {{selectedAssessment.teamworkRating || 'N/A'}}</p>
+                  <p><strong>Punctuality:</strong> {{selectedAssessment.punctuality || 'N/A'}}</p>
+                  <p><strong>Attitude:</strong> {{selectedAssessment.attitudeRating || 'N/A'}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="row mt-3">
+            <div class="col-md-6">
+              <h5>Strengths</h5>
+              <div class="card">
+                <div class="card-body">
+                  {{selectedAssessment.strengths || 'N/A'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Areas for Improvement</h5>
+              <div class="card">
+                <div class="card-body">
+                  {{selectedAssessment.improvementAreas || 'N/A'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Weakness</h5>
+              <div class="card">
+                <div class="card-body">
+                  {{selectedAssessment.weaknesses || 'N/A'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Trainer Remarks</h5>
+              <div class="card">
+                <div class="card-body">
+                  {{selectedAssessment.trainerRemarks || 'N/A'}}
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Discipline Remarks</h5>
+              <div class="card">
+                <div class="card-body">
+                  {{selectedAssessment.disciplineRemarks || 'N/A'}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

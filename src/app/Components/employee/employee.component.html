@@ -1,0 +1,351 @@
+<div class="container-fluid">
+  <div class="row p-2 bg-info">
+    <div class="col-6">
+      <h3>Employee List</h3>
+    </div>
+    <div class="col-6 text-end">
+      <button class="btn btn-warning" (click)="openModal()">Add Employee</button>
+    </div>
+  </div>
+
+  <!-- Items per page selector -->
+  <div class="row mt-3">
+    <div class="col-md-6">
+      <div class="input-group mb-3">
+        <label class="input-group-text" for="itemsPerPage">Items per page:</label>
+        <select class="form-select" id="itemsPerPage" (change)="onItemsPerPageChange($event)">
+          <option value="5">5</option>
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="50">50</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="paginatedEmployees && paginatedEmployees.length > 0; else noEmployees">
+    <table class="table table-bordered table-striped mt-3">
+      <thead>
+        <tr>
+          <th>SL No</th>
+          <th>Employee ID</th>
+          <th>Name</th>
+          <th>Department</th>
+          <th>Designation</th>
+          <th>Contact</th>
+          <th>Status</th>
+          <th class="text-center">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedEmployees; let i = index">
+          <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+          <td>{{ item.employeeIDNo }}</td>
+          <td>{{ item.employeeName }}</td>
+          <td>{{ item.department?.departmentName  }}</td>
+          <td>{{ item.designation?.designationName || '-' }}</td>
+          <td>{{ item.contactNo }}</td>
+          <td>
+            <span [class]="item.isAvailable ? 'badge bg-success' : 'badge bg-danger'">
+              {{ item.isAvailable ? 'Available' : 'Unavailable' }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-info btn-sm me-1" (click)="onDetails(item)">Details</button>||
+            <button class="btn btn-primary btn-sm" (click)="onEdit(item)">Edit</button>||
+            <button class="btn btn-danger btn-sm ms-2" (click)="onDelete(item)">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Pagination controls -->
+    <nav aria-label="Page navigation" *ngIf="totalPages > 1">
+      <ul class="pagination justify-content-center">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">Previous</a>
+        </li>
+
+        <li class="page-item" *ngFor="let page of pageNumbers" [class.active]="page === currentPage">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(page)">{{ page }}</a>
+        </li>
+
+        <li class="page-item" [class.disabled]="currentPage === totalPages">
+          <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">Next</a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+
+  <ng-template #noEmployees>
+    <h5 class="text-center p-5">No Employees Found</h5>
+  </ng-template>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="myModal" #myModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <!-- Modal Header -->
+      <div class="modal-header bg-info">
+        <h4 class="modal-title">
+          {{ employeeForm.value.employeeId != 0 ? 'Update' : 'Add' }} Employee
+        </h4>
+        <button type="button" class="btn-close" (click)="closeModal()"></button>
+      </div>
+
+      <!-- Modal Form -->
+      <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()" enctype="multipart/form-data">
+        <div class="modal-body">
+          <div class="row">
+            <!-- Personal Information Column -->
+            <div class="col-md-6">
+              <h5>Personal Information</h5>
+              <!--<div class="mb-3">
+                <label class="form-label">Employee ID*</label>
+                <input type="text" formControlName="employeeIDNo" class="form-control"
+                       [class.is-invalid]="employeeForm.get('employeeIDNo')?.invalid && employeeForm.get('employeeIDNo')?.touched">
+                <div class="invalid-feedback">Employee ID is required</div>
+              </div>-->
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Full Name*</label>
+              <input type="text" formControlName="employeeName" class="form-control"
+                     [class.is-invalid]="employeeForm.get('employeeName')?.invalid && employeeForm.get('employeeName')?.touched">
+              <div class="invalid-feedback">Full name is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Department*</label>
+              <select formControlName="departmentId" class="form-select"
+                      [class.is-invalid]="employeeForm.get('departmentId')?.invalid && employeeForm.get('departmentId')?.touched">
+                <option value="">Select Department</option>
+                <option *ngFor="let dept of departments" [value]="dept.departmentId">{{ dept.departmentName }}</option>
+              </select>
+              <div class="invalid-feedback">Department is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Designation*</label>
+              <select formControlName="designationId" class="form-select"
+                      [class.is-invalid]="employeeForm.get('designationId')?.invalid && employeeForm.get('designationId')?.touched">
+                <option value="">Select Designation</option>
+                <option *ngFor="let desig of designations" [value]="desig.designationId">{{ desig.designationName }}</option>
+              </select>
+              <div class="invalid-feedback">Designation is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Contact No*</label>
+              <input type="text" formControlName="contactNo" class="form-control"
+                     [class.is-invalid]="employeeForm.get('contactNo')?.invalid && employeeForm.get('contactNo')?.touched">
+              <div class="invalid-feedback">Contact number is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Email*</label>
+              <input type="email" formControlName="emailAddress" class="form-control"
+                     [class.is-invalid]="employeeForm.get('emailAddress')?.invalid && employeeForm.get('emailAddress')?.touched">
+              <div class="invalid-feedback">Valid email is required</div>
+            </div>
+          </div>
+
+          <!-- Additional Information Column -->
+          <div class="col-md-6">
+            <h5>Additional Information</h5>
+            <div class="mb-3">
+              <label class="form-label">Date of Birth*</label>
+              <input type="date" formControlName="dob" class="form-control"
+                     [class.is-invalid]="employeeForm.get('dob')?.invalid && employeeForm.get('dob')?.touched">
+              <div class="invalid-feedback">Date of birth is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Joining Date*</label>
+              <input type="date" formControlName="joiningDate" class="form-control"
+                     [class.is-invalid]="employeeForm.get('joiningDate')?.invalid && employeeForm.get('joiningDate')?.touched">
+              <div class="invalid-feedback">Joining date is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Employee Job End Date*</label>
+              <input type="date" formControlName="endDate" class="form-control"
+                     [class.is-invalid]="employeeForm.get('endDate')?.invalid && employeeForm.get('endDate')?.touched">
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Father's Name*</label>
+              <input type="text" formControlName="fathersName" class="form-control"
+                     [class.is-invalid]="employeeForm.get('fathersName')?.invalid && employeeForm.get('fathersName')?.touched">
+              <div class="invalid-feedback">Father's name is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Mother's Name*</label>
+              <input type="text" formControlName="mothersName" class="form-control"
+                     [class.is-invalid]="employeeForm.get('mothersName')?.invalid && employeeForm.get('mothersName')?.touched">
+              <div class="invalid-feedback">Mother's name is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">NID/Birth Certificate No*</label>
+              <input type="text" formControlName="birthOrNIDNo" class="form-control"
+                     [class.is-invalid]="employeeForm.get('birthOrNIDNo')?.invalid && employeeForm.get('birthOrNIDNo')?.touched">
+              <div class="invalid-feedback">NID/Birth Certificate number is required</div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Remarks</label>
+              <input type="text" formControlName="remarks" class="form-control"
+                     [class.is-invalid]="employeeForm.get('remarks')?.invalid && employeeForm.get('remarks')?.touched">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Address Information -->
+          <div class="col-md-6">
+            <h5>Address Information</h5>
+            <div class="mb-3">
+              <label class="form-label">Present Address*</label>
+              <textarea formControlName="presentAddress" class="form-control" rows="3"
+                        [class.is-invalid]="employeeForm.get('presentAddress')?.invalid && employeeForm.get('presentAddress')?.touched"></textarea>
+              <div class="invalid-feedback">Present address is required</div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Permanent Address*</label>
+              <textarea formControlName="permanentAddress" class="form-control" rows="3"
+                        [class.is-invalid]="employeeForm.get('permanentAddress')?.invalid && employeeForm.get('permanentAddress')?.touched"></textarea>
+              <div class="invalid-feedback">Permanent address is required</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- File Uploads -->
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Profile Image</label>
+              <input type="file" class="form-control" #fileInput (change)="onFileChange($event, 'image')" accept="image/*">
+              <div class="mt-2" *ngIf="imagePreview">
+                <img [src]="imagePreview" alt="Preview" class="img-thumbnail" style="max-height: 150px;">
+                <div class="form-text">Leave empty to keep existing image</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="mb-3">
+              <label class="form-label">Document</label>
+              <input type="file" class="form-control" #docInput (change)="onFileChange($event, 'document')">
+              <div class="mt-2" *ngIf="docPreview">
+                <span class="badge bg-info">{{ docPreview }}</span>
+                <div class="form-text">Leave empty to keep existing document</div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" formControlName="isAvailable" id="isAvailableCheck">
+                <label class="form-check-label" for="isAvailableCheck">Is Available</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check form-switch mb-3">
+                <input class="form-check-input" type="checkbox" formControlName="isWillingToSell" id="isWillingToSellCheck">
+                <label class="form-check-label" for="isWillingToSellCheck">Is Willing To Sell</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="modal-footer">
+          <button type="submit" [disabled]="employeeForm.invalid" class="btn btn-primary">
+            {{ employeeForm.value.employeeId != 0 ? 'Update' : 'Save' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Details Modal -->
+<div class="modal" id="detailsModal" #detailsModal>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header bg-info text-white">
+        <h5 class="modal-title">Employee Details</h5>
+        <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+      </div>
+      <div class="modal-body" *ngIf="selectedEmployee">
+        <div class="row">
+          <div class="col-md-4 text-center">
+            <!-- ইমেজ দেখানোর অংশ -->
+            <img [src]="selectedEmployee.imagePath ? (environment.apiBaseUrl + '/' + selectedEmployee.imagePath) : 'assets/images/default-user.png'"
+                 alt="Employee Photo" class="img-thumbnail mb-3" style="max-height: 200px;">
+            <h5>{{ selectedEmployee.employeeName }}</h5>
+            <p class="text-muted">{{ selectedEmployee.designation?.designationName }}</p>
+          </div>
+          <div class="col-md-8">
+            <div class="row">
+              <div class="col-md-6">
+                <p><strong>Employee ID:</strong> {{ selectedEmployee.employeeIDNo }}</p>
+                <p><strong>Department:</strong> {{ selectedEmployee.department?.departmentName }}</p>
+                <p><strong>Designation:</strong> {{ selectedEmployee.designation?.designationName }}</p>
+
+                <p><strong>Contact No:</strong> {{ selectedEmployee.contactNo }}</p>
+                <p><strong>Email:</strong> {{ selectedEmployee.emailAddress }}</p>
+                <p><strong>Date of Birth:</strong> {{ selectedEmployee.dob | date }}</p>
+              </div>
+              <div class="col-md-6">
+                <p><strong>Joining Date:</strong> {{ selectedEmployee.joiningDate | date }}</p>
+                <p><strong>End Date:</strong> {{ selectedEmployee.endDate | date }}</p>
+                <p><strong>Father's Name:</strong> {{ selectedEmployee.fathersName }}</p>
+                <p><strong>Mother's Name:</strong> {{ selectedEmployee.mothersName }}</p>
+                <p><strong>NID/Birth Cert:</strong> {{ selectedEmployee.birthOrNIDNo }}</p>
+                <p><strong>Remarks:</strong> {{ selectedEmployee.remarks }}</p>
+                <p>
+                  <strong>Status:</strong>
+                  <span [class]="selectedEmployee.isAvailable ? 'badge bg-success' : 'badge bg-danger'">
+                    {{ selectedEmployee.isAvailable ? 'Available' : 'Unavailable' }}
+                  </span>
+                </p>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col-md-6">
+                <h6>Present Address</h6>
+                <p>{{ selectedEmployee.presentAddress }}</p>
+              </div>
+              <div class="col-md-6">
+                <h6>Permanent Address</h6>
+                <p>{{ selectedEmployee.permanentAddress }}</p>
+              </div>
+            </div>
+            <!-- ডকুমেন্ট দেখানোর অংশ -->
+            <div *ngIf="selectedEmployee.documentPath; else noDocument">
+              <a [href]="getDocumentUrl(selectedEmployee.documentPath)"
+                 target="_blank"
+                 class="btn btn-sm btn-info">
+                <i class="fas fa-file"></i> View Document
+              </a>
+            </div>
+            <ng-template #noDocument>
+              <span class="text-muted">No document available</span>
+            </ng-template>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDetailsModal()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

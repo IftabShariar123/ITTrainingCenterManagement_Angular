@@ -1,0 +1,52 @@
+<div class="container mt-3">
+  <h2>Daily Sales Monitoring</h2>
+
+  <form [formGroup]="form" class="mb-3 row g-3">
+    <div class="col-md-3">
+      <label>Employee</label>
+      <select class="form-control" formControlName="employeeId">
+        <option value="0">-- Select Employee --</option>
+        <option *ngFor="let emp of employees" [value]="emp.employeeId">{{ emp.employeeName }}</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label>Start Date</label>
+      <input type="date" class="form-control" formControlName="startDate" />
+    </div>
+    <div class="col-md-3">
+      <label>End Date</label>
+      <input type="date" class="form-control" formControlName="endDate" />
+    </div>
+    <div class="col-md-3 d-flex align-items-end">
+      <button class="btn btn-primary me-2" (click)="search()" type="button">Search</button>
+      <button class="btn btn-success me-2" (click)="exportToExcel()" type="button">Export Excel</button>
+      <button class="btn btn-danger" (click)="exportToPDF()" type="button">Export PDF</button>
+    </div>
+
+  </form>
+
+  <table class="table table-bordered table-striped mt-3" *ngIf="salesRecords.length > 0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>New Collections</th>
+        <th>Due Collections</th>
+        <th>Remarks</th>
+        <th>Employee</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of salesRecords">
+        <td>{{ record.date | date: 'mediumDate' }}</td>
+        <td>{{ record.newCollections  }}</td>
+        <td>{{record.dueCollections}}</td>
+        <td>{{ record.remarks }}</td>
+        <td>{{ record.employee?.employeeName }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="salesRecords.length > 0" class="mt-2">
+    <strong>Grand Total (New + Due Collections): {{ grandTotal }}</strong>
+  </div>
+</div>
